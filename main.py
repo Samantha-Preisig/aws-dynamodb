@@ -32,7 +32,16 @@ except ClientError as e:
     else:
         print("Unexpected error: %s" % e)
 
+# TODO: create csv_files directory to organize workspace
+# filenames = os.listdir('csv_files/')
+# csv_dir = "csv_files/"
+# for filename in filenames:
+#     table_name = ("spreisig"+"_"+filename).replace('.csv', '')
+#     create_table(dynamodb_res, dynamodb_client, table_name, csv_dir+filename)
+
 create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_area", "shortlist_area.csv")
 create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_capitals", "shortlist_capitals.csv")
-create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_languages", "shortlist_languages.csv")
+create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_curpop", "shortlist_curpop.csv")
+create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_gdppc", "shortlist_gdppc.csv")
+# create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_languages", "shortlist_languages.csv")
 create_table(dynamodb_res, dynamodb_client, "spreisig_un_shortlist", "un_shortlist.csv")
