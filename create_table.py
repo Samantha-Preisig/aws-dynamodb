@@ -3,14 +3,14 @@
 import boto3
 import csv
 import json
-import pandas as pd
+import pandas as pd # Not used (yet..?)
 
 dict_tables = {
     "shortlist_area.csv": {"table_name": "spreisig_shortlist_area", "key_columns": ["ISO3", "Area"]},
     "shortlist_capitals.csv": {"table_name": "spreisig_shortlist_capitals", "key_columns": ["ISO3", "Capital"]},
     "shortlist_curpop.csv": {"table_name": "spreisig_shortlist_curpop", "key_columns": ["\ufeffCountry Name"]}, # "shortlist_curpop.csv": {"table_name": "spreisig_shortlist_curpop", "key_columns": ["Currency"]},
     "shortlist_gdppc.csv": {"table_name": "spreisig_shortlist_gdppc", "key_columns": ["\ufeffCountry Name"]},
-    "shortlist_languages.csv": {"table_name": "spreisig_shortlist_languages", "key_columns": ["ISO3", "Language"]},
+    "shortlist_languages.csv": {"table_name": "spreisig_shortlist_languages", "key_columns": ["ISO3"]},
     "un_shortlist.csv": {"table_name": "spreisig_un_shortlist", "key_columns": ["ISO3", "Official Name"]}
 }
 
@@ -25,7 +25,6 @@ def csv_to_json(csv_file_path, json_file_path, table_name): # Find reference
         # Convert each row into a dictionary and add the converted data to data_variable
         for row in csv_reader:
             key = row[str(get_table_keys(table_name)[0])]
-            # print(row)
             data_dict[key] = row
         
     # Open a json file handler and use json.dumps method to dump the data
@@ -119,6 +118,7 @@ def bulk_load_table(dynamodb_res, table_name, json_filename):
     with open(json_filename, "r") as json_file:
         data = json.load(json_file)
         for key, value in data.items():
+            data[key] = {key: value for key, value in data[key].items() if key} # **Only reads FIRST language listed if country has more than 1 language**
             table.put_item(
                 Item=data[key]
             )
