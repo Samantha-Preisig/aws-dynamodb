@@ -7,7 +7,7 @@ from create_table import create_new_table
 from delete_table import delete_table
 from load_records import add_record
 
-def help(args):
+def cmd_help(args):
     if args:
         try:
             with open(f'help/{args[0]}.txt') as f:
@@ -33,10 +33,5 @@ def cmd_delete_table(dynamodb_client, args):
     else:
         delete_table(dynamodb_client, args[0])
 
-def cmd_add_record(dynamodb_res, args):
-    # if(len(args) != 1):
-    #     print("Not a valid command. Enter `help add_record` for a list of valid commands")
-    #     return
-    # else:
-    #     add_record(args[0])
+def cmd_add_record(dynamodb_res):
     add_record(dynamodb_res)

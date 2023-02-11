@@ -1,0 +1,242 @@
+{
+    "ALB": {
+        "ISO3": "ALB",
+        "Country Name": "Albania",
+        "Official Name": "the Republic of Albania",
+        "ISO2": "AL"
+    },
+    "DZA": {
+        "ISO3": "DZA",
+        "Country Name": "Algeria",
+        "Official Name": "the People's Democratic Republic of Algeria",
+        "ISO2": "DZ"
+    },
+    "AND": {
+        "ISO3": "AND",
+        "Country Name": "Andorra",
+        "Official Name": "the Principality of Andorra",
+        "ISO2": "AD"
+    },
+    "AGO": {
+        "ISO3": "AGO",
+        "Country Name": "Angola",
+        "Official Name": "the Republic of Angola",
+        "ISO2": "AO"
+    },
+    "ATG": {
+        "ISO3": "ATG",
+        "Country Name": "Antigua and Barbuda",
+        "Official Name": "Antigua and Barbuda",
+        "ISO2": "AG"
+    },
+    "ARG": {
+        "ISO3": "ARG",
+        "Country Name": "Argentina",
+        "Official Name": "the Argentine Republic",
+        "ISO2": "AR"
+    },
+    "ARM": {
+        "ISO3": "ARM",
+        "Country Name": "Armenia",
+        "Official Name": "the Republic of Armenia",
+        "ISO2": "AM"
+    },
+    "AUS": {
+        "ISO3": "AUS",
+        "Country Name": "Australia",
+        "Official Name": "Australia",
+        "ISO2": "AU"
+    },
+    "AUT": {
+        "ISO3": "AUT",
+        "Country Name": "Austria",
+        "Official Name": "the Republic of Austria",
+        "ISO2": "AT"
+    },
+    "AZE": {
+        "ISO3": "AZE",
+        "Country Name": "Azerbaijan",
+        "Official Name": "the Republic of Azerbaijan",
+        "ISO2": "AZ"
+    },
+    "BHS": {
+        "ISO3": "BHS",
+        "Country Name": "Bahamas",
+        "Official Name": "the Commonwealth of the Bahamas",
+        "ISO2": "BS"
+    },
+    "BHR": {
+        "ISO3": "BHR",
+        "Country Name": "Bahrain",
+        "Official Name": "the Kingdom of Bahrain",
+        "ISO2": "BH"
+    },
+    "BGD": {
+        "ISO3": "BGD",
+        "Country Name": "Bangladesh",
+        "Official Name": "the People's Republic of Bangladesh",
+        "ISO2": "BD"
+    },
+    "BRB": {
+        "ISO3": "BRB",
+        "Country Name": "Barbados",
+        "Official Name": "Barbados",
+        "ISO2": "BB"
+    },
+    "BLR": {
+        "ISO3": "BLR",
+        "Country Name": "Belarus",
+        "Official Name": "the Republic of Belarus",
+        "ISO2": "BY"
+    },
+    "BEL": {
+        "ISO3": "BEL",
+        "Country Name": "Belgium",
+        "Official Name": "the Kingdom of Belgium",
+        "ISO2": "BE"
+    },
+    "BLZ": {
+        "ISO3": "BLZ",
+        "Country Name": "Belize",
+        "Official Name": "Belize",
+        "ISO2": "BZ"
+    },
+    "BEN": {
+        "ISO3": "BEN",
+        "Country Name": "Benin",
+        "Official Name": "the Republic of Benin",
+        "ISO2": "BJ"
+    },
+    "BTN": {
+        "ISO3": "BTN",
+        "Country Name": "Bhutan",
+        "Official Name": "the Kingdom of Bhutan",
+        "ISO2": "BT"
+    },
+    "BOL": {
+        "ISO3": "BOL",
+        "Country Name": "Bolivia (Plurinational State of)",
+        "Official Name": "the Plurinational State of Bolivia",
+        "ISO2": "BO"
+    },
+    "BIH": {
+        "ISO3": "BIH",
+        "Country Name": "Bosnia and Herzegovina",
+        "Official Name": "Bosnia and Herzegovina",
+        "ISO2": "BA"
+    },
+    "BWA": {
+        "ISO3": "BWA",
+        "Country Name": "Botswana",
+        "Official Name": "the Republic of Botswana",
+        "ISO2": "BW"
+    },
+    "BRA": {
+        "ISO3": "BRA",
+        "Country Name": "Brazil",
+        "Official Name": "the Federative Republic of Brazil",
+        "ISO2": "BR"
+    },
+    "BRN": {
+        "ISO3": "BRN",
+        "Country Name": "Brunei Darussalam",
+        "Official Name": "Brunei Darussalam",
+        "ISO2": "BN"
+    },
+    "BGR": {
+        "ISO3": "BGR",
+        "Country Name": "Bulgaria",
+        "Official Name": "the Republic of Bulgaria",
+        "ISO2": "BG"
+    },
+    "BFA": {
+        "ISO3": "BFA",
+        "Country Name": "Burkina Faso",
+        "Official Name": "Burkina Faso",
+        "ISO2": "BF"
+    },
+    "BDI": {
+        "ISO3": "BDI",
+        "Country Name": "Burundi",
+        "Official Name": "the Republic of Burundi",
+        "ISO2": "BI"
+    },
+    "CPV": {
+        "ISO3": "CPV",
+        "Country Name": "Cabo Verde",
+        "Official Name": "the Republic of Cabo Verde",
+        "ISO2": "CV"
+    },
+    "KHM": {
+        "ISO3": "KHM",
+        "Country Name": "Cambodia",
+        "Official Name": "the Kingdom of Cambodia",
+        "ISO2": "KH"
+    },
+    "CMR": {
+        "ISO3": "CMR",
+        "Country Name": "Cameroon",
+        "Official Name": "the Republic of Cameroon",
+        "ISO2": "CM"
+    },
+    "CAN": {
+        "ISO3": "CAN",
+        "Country Name": "Canada",
+        "Official Name": "Canada",
+        "ISO2": "CA"
+    },
+    "CAF": {
+        "ISO3": "CAF",
+        "Country Name": "Central African Republic",
+        "Official Name": "the Central African Republic",
+        "ISO2": "CF"
+    },
+    "TCD": {
+        "ISO3": "TCD",
+        "Country Name": "Chad",
+        "Official Name": "the Republic of Chad",
+        "ISO2": "TD"
+    },
+    "CHL": {
+        "ISO3": "CHL",
+        "Country Name": "Chile",
+        "Official Name": "the Republic of Chile",
+        "ISO2": "CL"
+    },
+    "CHN": {
+        "ISO3": "CHN",
+        "Country Name": "China",
+        "Official Name": "the People's Republic of China",
+        "ISO2": "CN"
+    },
+    "COL": {
+        "ISO3": "COL",
+        "Country Name": "Colombia",
+        "Official Name": "the Republic of Colombia",
+        "ISO2": "CO"
+    },
+    "COM": {
+        "ISO3": "COM",
+        "Country Name": "Comoros",
+        "Official Name": "the Union of the Comoros",
+        "ISO2": "KM"
+    },
+    "COG": {
+        "ISO3": "COG",
+        "Country Name": "Congo",
+        "Official Name": "the Republic of the Congo",
+        "ISO2": "CG"
+    },
+    "COK": {
+        "ISO3": "COK",
+        "Country Name": "Cook Islands",
+        "Official Name": "the Cook Islands",
+        "ISO2": "CK"
+    },
+    "CRI": {
+        "ISO3": "CRI",
+        "Country Name": "Costa Rica",
+        "Official Name": "the Republic of Costa Rica",
+        "ISO2": "CR"
+    }
+}

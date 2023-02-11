@@ -2,5 +2,6 @@
 def init():
     global dict_tables
     global data_dir
+    global json_dir
     global help_dir
     global add_records_file

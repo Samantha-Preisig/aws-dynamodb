@@ -25,6 +25,7 @@ def set_globals():
         "un_shortlist.csv": {"table_name": "spreisig_un_shortlist", "key_columns": ["ISO3", "Official Name"]}
     }
     global_vars.data_dir = "data/"
+    global_vars.json_dir = global_vars.data_dir+"json/"
     global_vars.help_dir = "help/"
     global_vars.add_records_file = global_vars.data_dir+"add_records.txt"
 
@@ -54,7 +55,11 @@ def config_and_setup():
 
 def build_tables(dynamodb_res, dynamodb_client):
     filenames = os.listdir(global_vars.data_dir)
+
     filenames.remove(global_vars.add_records_file.replace(global_vars.data_dir, ''))
+    filenames.remove("json")
+    filenames.remove("README.md")
+
     for filename in filenames:
         table_name = ("spreisig_"+filename).replace('.csv', '')
         create_table(dynamodb_res, dynamodb_client, table_name, global_vars.data_dir+filename)
@@ -73,7 +78,7 @@ def main():
         args = cli[1:]
 
         if(command == "help"):
-            help(args)
+            cmd_help(args)
 
         elif(command == "create_new_table"):
             cmd_create_table(dynamodb_res, dynamodb_client, args)
@@ -82,7 +87,7 @@ def main():
             cmd_delete_table(dynamodb_client, args)
 
         elif(command == "add_record"):
-            cmd_add_record(dynamodb_res, args)
+            cmd_add_record(dynamodb_res)
 
         elif(command == "quit"):
             break

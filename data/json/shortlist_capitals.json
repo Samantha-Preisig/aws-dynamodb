@@ -1,0 +1,202 @@
+{
+    "ALB": {
+        "ISO3": "ALB",
+        "Country Name": "Albania",
+        "Capital": "Tirana"
+    },
+    "DZA": {
+        "ISO3": "DZA",
+        "Country Name": "Algeria",
+        "Capital": "Algiers"
+    },
+    "AND": {
+        "ISO3": "AND",
+        "Country Name": "Andorra",
+        "Capital": "Andorra la Vella"
+    },
+    "AGO": {
+        "ISO3": "AGO",
+        "Country Name": "Angola",
+        "Capital": "Luanda"
+    },
+    "ATG": {
+        "ISO3": "ATG",
+        "Country Name": "Antigua and Barbuda",
+        "Capital": "Saint John's"
+    },
+    "ARG": {
+        "ISO3": "ARG",
+        "Country Name": "Argentina",
+        "Capital": "Buenos Aires"
+    },
+    "ARM": {
+        "ISO3": "ARM",
+        "Country Name": "Armenia",
+        "Capital": "Yerevan"
+    },
+    "AUS": {
+        "ISO3": "AUS",
+        "Country Name": "Australia",
+        "Capital": "Canberra"
+    },
+    "AUT": {
+        "ISO3": "AUT",
+        "Country Name": "Austria",
+        "Capital": "Vienna"
+    },
+    "AZE": {
+        "ISO3": "AZE",
+        "Country Name": "Azerbaijan",
+        "Capital": "Baku"
+    },
+    "BHS": {
+        "ISO3": "BHS",
+        "Country Name": "Bahamas",
+        "Capital": "Nassau"
+    },
+    "BHR": {
+        "ISO3": "BHR",
+        "Country Name": "Bahrain",
+        "Capital": "Manama"
+    },
+    "BGD": {
+        "ISO3": "BGD",
+        "Country Name": "Bangladesh",
+        "Capital": "Dhaka"
+    },
+    "BRB": {
+        "ISO3": "BRB",
+        "Country Name": "Barbados",
+        "Capital": "Bridgetown"
+    },
+    "BLR": {
+        "ISO3": "BLR",
+        "Country Name": "Belarus",
+        "Capital": "Minsk"
+    },
+    "BEL": {
+        "ISO3": "BEL",
+        "Country Name": "Belgium",
+        "Capital": "Brussels"
+    },
+    "BLZ": {
+        "ISO3": "BLZ",
+        "Country Name": "Belize",
+        "Capital": "Belmopan"
+    },
+    "BEN": {
+        "ISO3": "BEN",
+        "Country Name": "Benin",
+        "Capital": "Porto-Novo"
+    },
+    "BTN": {
+        "ISO3": "BTN",
+        "Country Name": "Bhutan",
+        "Capital": "Thimphu"
+    },
+    "BOL": {
+        "ISO3": "BOL",
+        "Country Name": "Bolivia (Plurinational State of)",
+        "Capital": "Sucre"
+    },
+    "BIH": {
+        "ISO3": "BIH",
+        "Country Name": "Bosnia and Herzegovina",
+        "Capital": "Sarajevo"
+    },
+    "BWA": {
+        "ISO3": "BWA",
+        "Country Name": "Botswana",
+        "Capital": "Gaborone"
+    },
+    "BRA": {
+        "ISO3": "BRA",
+        "Country Name": "Brazil",
+        "Capital": "Brasilia"
+    },
+    "BRN": {
+        "ISO3": "BRN",
+        "Country Name": "Brunei Darussalam",
+        "Capital": "Bandar Seri Begawan"
+    },
+    "BGR": {
+        "ISO3": "BGR",
+        "Country Name": "Bulgaria",
+        "Capital": "Sofia"
+    },
+    "BFA": {
+        "ISO3": "BFA",
+        "Country Name": "Burkina Faso",
+        "Capital": "Ouagadougou"
+    },
+    "BDI": {
+        "ISO3": "BDI",
+        "Country Name": "Burundi",
+        "Capital": "Gitega"
+    },
+    "CPV": {
+        "ISO3": "CPV",
+        "Country Name": "Cabo Verde",
+        "Capital": "Praia"
+    },
+    "KHM": {
+        "ISO3": "KHM",
+        "Country Name": "Cambodia",
+        "Capital": "Phnom Penh"
+    },
+    "CMR": {
+        "ISO3": "CMR",
+        "Country Name": "Cameroon",
+        "Capital": "Yaounde"
+    },
+    "CAN": {
+        "ISO3": "CAN",
+        "Country Name": "Canada",
+        "Capital": "Ottawa"
+    },
+    "CAF": {
+        "ISO3": "CAF",
+        "Country Name": "Central African Republic",
+        "Capital": "Bangui"
+    },
+    "TCD": {
+        "ISO3": "TCD",
+        "Country Name": "Chad",
+        "Capital": "N'Djamena"
+    },
+    "CHL": {
+        "ISO3": "CHL",
+        "Country Name": "Chile",
+        "Capital": "Santiago"
+    },
+    "CHN": {
+        "ISO3": "CHN",
+        "Country Name": "China",
+        "Capital": "Beijing"
+    },
+    "COL": {
+        "ISO3": "COL",
+        "Country Name": "Colombia",
+        "Capital": "Bogot\u00e1"
+    },
+    "COM": {
+        "ISO3": "COM",
+        "Country Name": "Comoros",
+        "Capital": "Moroni"
+    },
+    "COG": {
+        "ISO3": "COG",
+        "Country Name": "Congo",
+        "Capital": "Brazzaville"
+    },
+    "COK": {
+        "ISO3": "COK",
+        "Country Name": "Cook Islands",
+        "Capital": "Avarua"
+    },
+    "CRI": {
+        "ISO3": "CRI",
+        "Country Name": "Costa Rica",
+        "Capital": "San Jose"
+    }
+}

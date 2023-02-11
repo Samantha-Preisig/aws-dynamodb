@@ -1,8 +1,4 @@
 
-Usage: add_record [table_name] [partition_key_data | sort_key_data | other_data]
+Usage: add_record
 
-Command arguments:
-table_name          required: name of table being created
-partition_key_data  required: partition key of table
-sort_key_data       required if table has sort key: key to sort table
-other_data          optional: other data for record (ASSUMPTION: )
+Reads add_records.txt (in data/add_records.txt) and adds records line by line

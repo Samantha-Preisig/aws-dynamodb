@@ -40,7 +40,7 @@ def get_key_type(key): # TODO: need area to be N instead of S
     return 'S'
 
 def create_table(dynamodb_res, dynamodb_client, table_name, csv_filename):
-    json_filename = csv_filename.replace(global_vars.data_dir, '') # json files are created at root (not within data/)
+    json_filename = csv_filename.replace(global_vars.data_dir, global_vars.json_dir) # json files placed in data/json/
     json_filename = json_filename.replace('.csv', '.json') # Creating json filename (replacing csv to json extension)
     csv_to_json(csv_filename, json_filename, table_name) # Convert csv to json file
 
