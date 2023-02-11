@@ -1,0 +1,5 @@
+usage: help [command]
+
+shows a list of commands
+
+[command]: if specified will show a detailed help page for a specific command

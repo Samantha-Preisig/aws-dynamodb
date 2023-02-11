@@ -4,11 +4,28 @@ import configparser
 import os
 import sys
 import boto3
+import readline
 from botocore.exceptions import ClientError
 
-# Import modules
+# Import custom files/modules
+import global_vars
 from create_table import create_table
-from delete_table import delete_table
+# from delete_table import delete_table
+# from load_records import add_record
+from cli_functions import *
+
+def set_globals():
+    global_vars.init()
+    global_vars.dict_tables = {
+        "shortlist_area.csv": {"table_name": "spreisig_shortlist_area", "key_columns": ["ISO3", "Area"]},
+        "shortlist_capitals.csv": {"table_name": "spreisig_shortlist_capitals", "key_columns": ["ISO3", "Capital"]},
+        "shortlist_curpop.csv": {"table_name": "spreisig_shortlist_curpop", "key_columns": ["\ufeffCountry Name"]},
+        "shortlist_gdppc.csv": {"table_name": "spreisig_shortlist_gdppc", "key_columns": ["\ufeffCountry Name"]},
+        # "shortlist_languages.csv": {"table_name": "spreisig_shortlist_languages", "key_columns": ["ISO3"]},
+        "un_shortlist.csv": {"table_name": "spreisig_un_shortlist", "key_columns": ["ISO3", "Official Name"]}
+    }
+    global_vars.data_dir = "data/"
+    global_vars.help_dir = "help/"
 
 def config_and_setup():
     # AWS access key id and secret access key information found in configuration file (S5-S3.conf)
@@ -35,24 +52,50 @@ def config_and_setup():
             print("Unexpected error: %s" % e)
 
 def build_tables(dynamodb_res, dynamodb_client):
-    # TODO: create csv_files directory to organize workspace
-    # filenames = os.listdir('csv_files/')
-    # csv_dir = "csv_files/"
-    # for filename in filenames:
-    #     table_name = ("spreisig"+"_"+filename).replace('.csv', '')
-    #     create_table(dynamodb_res, dynamodb_client, table_name, csv_dir+filename)
+    # TODO: create csv_files directory to organize workspace (use data/ instead of csv_files/)
+    filenames = os.listdir(global_vars.data_dir)
+    for filename in filenames:
+        table_name = ("spreisig"+"_"+filename).replace('.csv', '')
+        create_table(dynamodb_res, dynamodb_client, table_name, global_vars.data_dir+filename)
     
-    create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_area", "shortlist_area.csv")
-    create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_capitals", "shortlist_capitals.csv")
-    create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_curpop", "shortlist_curpop.csv")
-    create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_gdppc", "shortlist_gdppc.csv")
-    # create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_languages", "shortlist_languages.csv")
-    create_table(dynamodb_res, dynamodb_client, "spreisig_un_shortlist", "un_shortlist.csv")
+    # create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_area", "shortlist_area.csv")
+    # create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_capitals", "shortlist_capitals.csv")
+    # create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_curpop", "shortlist_curpop.csv")
+    # create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_gdppc", "shortlist_gdppc.csv")
+    # # create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_languages", "shortlist_languages.csv")
+    # create_table(dynamodb_res, dynamodb_client, "spreisig_un_shortlist", "un_shortlist.csv")
 
 def main():
+    set_globals()
     dynamodb_res, dynamodb_client = config_and_setup()
     build_tables(dynamodb_res, dynamodb_client)
-    delete_table(dynamodb_client, "spreisig_shortlist_area")
+
+    # CLI
+    print("\nWelcome to Sam's custom AWS CLI\nFor help command, type `help`\nTo stop CLI, type `quit`")
+    while True:
+        cli = input("> ").split()
+        command = cli[0]
+        args = cli[1:]
+
+        if(command == "help"):
+            help(args)
+
+        elif(command == "delete_table"):
+            cmd_delete_table(dynamodb_client, args)
+
+        elif(command == "add_record"):
+            cmd_add_record(dynamodb_client, args)
+
+        elif(command == "quit"):
+            break
+
+        else:
+            print("Not a valid command. Enter `help` for a list of valid commands")
+    # delete_table(dynamodb_client, "spreisig_shortlist_area")
+    # delete_table(dynamodb_client, "spreisig_shortlist_capitals")
+    # delete_table(dynamodb_client, "spreisig_shortlist_curpop")
+    # delete_table(dynamodb_client, "spreisig_shortlist_gdppc")
+    # delete_table(dynamodb_client, "spreisig_un_shortlist")
 
 if __name__ == "__main__":
     main()

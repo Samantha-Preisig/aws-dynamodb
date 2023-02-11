@@ -1,0 +1,9 @@
+usage: add_record <table_name>
+
+Adds a record to a given table.
+Will spawn another CLI to retrieve corresponding information for the record
+Data must be given for partition and sort key (if sort key exists) respectfully
+Other data is optional
+
+Command arguments:
+table_name          required: name of table receiving new record

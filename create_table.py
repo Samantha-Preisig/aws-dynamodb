@@ -5,14 +5,9 @@ import csv
 import json
 import pandas as pd # Not used (yet..?)
 
-dict_tables = {
-    "shortlist_area.csv": {"table_name": "spreisig_shortlist_area", "key_columns": ["ISO3", "Area"]},
-    "shortlist_capitals.csv": {"table_name": "spreisig_shortlist_capitals", "key_columns": ["ISO3", "Capital"]},
-    "shortlist_curpop.csv": {"table_name": "spreisig_shortlist_curpop", "key_columns": ["\ufeffCountry Name"]}, # "shortlist_curpop.csv": {"table_name": "spreisig_shortlist_curpop", "key_columns": ["Currency"]},
-    "shortlist_gdppc.csv": {"table_name": "spreisig_shortlist_gdppc", "key_columns": ["\ufeffCountry Name"]},
-    "shortlist_languages.csv": {"table_name": "spreisig_shortlist_languages", "key_columns": ["ISO3"]},
-    "un_shortlist.csv": {"table_name": "spreisig_un_shortlist", "key_columns": ["ISO3", "Official Name"]}
-}
+# Import custome files/modules
+import global_vars
+from load_records import bulk_load
 
 def csv_to_json(csv_file_path, json_file_path, table_name): # Find reference
     print("Converting csv to json for " + table_name + " ...")
@@ -32,7 +27,7 @@ def csv_to_json(csv_file_path, json_file_path, table_name): # Find reference
         json_file_handler.write(json.dumps(data_dict, indent=4))
 
 def get_table_keys(table_name):
-    for table, data in dict_tables.items():
+    for table, data in global_vars.dict_tables.items():
         if(data["table_name"] == table_name):
             if(len(data["key_columns"]) < 2):
                 return data["key_columns"][0], ""
@@ -47,7 +42,8 @@ def get_key_type(key):
     return 'S'
 
 def create_table(dynamodb_res, dynamodb_client, table_name, csv_filename):
-    json_filename = csv_filename.replace('.csv', '.json') # Creating json filename (replacing csv to json extension)
+    json_filename = csv_filename.replace(global_vars.data_dir, '') # Creating json filename (replacing csv to json extension)
+    json_filename = json_filename.replace('.csv', '.json') # Creating json filename (replacing csv to json extension)
     csv_to_json(csv_filename, json_filename, table_name) # Convert csv to json file
 
     existing_tables = dynamodb_client.list_tables()['TableNames']
@@ -106,19 +102,7 @@ def create_table(dynamodb_res, dynamodb_client, table_name, csv_filename):
         table.wait_until_exists() # Wait until the table exists
         
         # Load data from json file into table
-        bulk_load_table(dynamodb_res, table_name, json_filename)
+        bulk_load(dynamodb_res, table_name, json_filename)
         # print("Table item count: ", table.item_count) # Print item count for table
     else:
         print(table_name + " already exists")
-
-# Initial load of data from csv-json files
-def bulk_load_table(dynamodb_res, table_name, json_filename):
-    table = dynamodb_res.Table(table_name)
-    
-    with open(json_filename, "r") as json_file:
-        data = json.load(json_file)
-        for key, value in data.items():
-            data[key] = {key: value for key, value in data[key].items() if key} # **Only reads FIRST language listed if country has more than 1 language**
-            table.put_item(
-                Item=data[key]
-            )
