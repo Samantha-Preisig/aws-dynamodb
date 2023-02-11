@@ -1,5 +1,4 @@
 import boto3
-# import json
 
 # Import custom files/modules
 import global_vars

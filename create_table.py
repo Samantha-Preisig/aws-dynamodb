@@ -16,13 +16,32 @@ def csv_to_json(csv_file_path, json_file_path, table_name): # TODO: Find referen
         csv_reader = csv.DictReader(csv_file_handler)
 
         # Convert each row into a dictionary and add the converted data to data_variable
+        languages = get_languages(csv_file_path)
+        i = 0
         for row in csv_reader:
             key = row[str(get_table_keys(table_name)[0])]
+            row["Languages"] = ' '.join(languages[i])
             data_dict[key] = row
+            i += 1
         
     # Open a json file handler and use json.dumps method to dump the data
     with open(json_file_path, 'w', encoding='utf-8') as json_file_handler:
         json_file_handler.write(json.dumps(data_dict, indent=4))
+
+def get_languages(csv_file_path):
+    with open(csv_file_path, newline='', encoding='utf8') as f:
+        csv_reader = csv.reader(f)
+        data = list(csv_reader)
+
+        languages = []
+        first_row = 1
+        for row in data:
+            if(first_row):
+                first_row = 0
+            else:
+                languages.append(list(filter(None, row[2:])))
+        # print(languages)
+        return languages
 
 def get_table_keys(table_name):
     for table, data in global_vars.dict_tables.items():
