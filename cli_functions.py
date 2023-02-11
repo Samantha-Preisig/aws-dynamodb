@@ -1,9 +1,11 @@
 import os
 import sys
-import boto3
+# import boto3
 
-# Import modules
+# Import custom files/modules
+from create_table import create_new_table
 from delete_table import delete_table
+from load_records import add_record
 
 def help(args):
     if args:
@@ -11,21 +13,30 @@ def help(args):
             with open(f'help/{args[0]}.txt') as f:
                 print(f.read())
         except FileNotFoundError as e:
-            print("Not a valid command. Enter `help` for a list of valid commands")
+            print("File not found")
     else:
         with open('help/default.txt') as f:
             print(f.read())
 
+def cmd_create_table(dynamodb_res, dynamodb_client, args):
+    if(len(args) == 2):
+        create_new_table(dynamodb_res, dynamodb_client, args[0], args[1], "")
+    elif(len(args) == 3):
+        create_new_table(dynamodb_res, dynamodb_client, args[0], args[1], args[2])
+    else:
+        print("Invalid arguments. Enter `help create_new_table` for valid arguments")
+
 def cmd_delete_table(dynamodb_client, args):
     if(len(args) != 1):
-        print("Not a valid command. Enter `help delete_table` for a list of valid commands")
+        print("Invalid arguments. Enter `help delete_table` for valid arguments")
         return
     else:
         delete_table(dynamodb_client, args[0])
 
-# def cmd_add_record(dynamodb_client, args):
-#     if(len(args) != 1):
-#         print("Not a valid command. Enter `help add_record` for a list of valid commands")
-#         return
-#     else:
-#         add_record(args[0])
+def cmd_add_record(dynamodb_res, args):
+    # if(len(args) != 1):
+    #     print("Not a valid command. Enter `help add_record` for a list of valid commands")
+    #     return
+    # else:
+    #     add_record(args[0])
+    add_record(dynamodb_res)

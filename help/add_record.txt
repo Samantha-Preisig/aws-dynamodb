@@ -1,9 +1,8 @@
-usage: add_record <table_name>
 
-Adds a record to a given table.
-Will spawn another CLI to retrieve corresponding information for the record
-Data must be given for partition and sort key (if sort key exists) respectfully
-Other data is optional
+Usage: add_record [table_name] [partition_key_data | sort_key_data | other_data]
 
 Command arguments:
-table_name          required: name of table receiving new record
+table_name          required: name of table being created
+partition_key_data  required: partition key of table
+sort_key_data       required if table has sort key: key to sort table
+other_data          optional: other data for record (ASSUMPTION: )

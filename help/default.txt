@@ -1,9 +1,11 @@
+
 These are the current commands you can use:
 
-help            shows a list of commands and their usage
-delete_table    delete an entire table
-load_record     bulk load records from csv files to their respective (existing) tables
-add_record      load a single record to an existing table
-delete_record   delete an existing record from an existing table
-dump            displays all data for a specified table
-query           <not sure yet>
+help                shows a list of commands and their usage
+create_new_table    creates a new (empty) table
+delete_table        deletes an entire table
+load_record         ???
+add_record          loads a single record to an existing table
+delete_record       deletes an existing record from an existing table
+dump                displays all data for a specified table
+query               ???

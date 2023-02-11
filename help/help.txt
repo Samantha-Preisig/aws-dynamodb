@@ -1,4 +1,5 @@
-usage: help [command]
+
+Usage: help [command]
 
 shows a list of commands
 

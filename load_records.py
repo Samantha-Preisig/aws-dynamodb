@@ -1,14 +1,8 @@
 import boto3
 import json
 
-dict_tables = {
-    "shortlist_area.csv": {"table_name": "spreisig_shortlist_area", "key_columns": ["ISO3", "Area"]},
-    "shortlist_capitals.csv": {"table_name": "spreisig_shortlist_capitals", "key_columns": ["ISO3", "Capital"]},
-    "shortlist_curpop.csv": {"table_name": "spreisig_shortlist_curpop", "key_columns": ["\ufeffCountry Name"]}, # "shortlist_curpop.csv": {"table_name": "spreisig_shortlist_curpop", "key_columns": ["Currency"]},
-    "shortlist_gdppc.csv": {"table_name": "spreisig_shortlist_gdppc", "key_columns": ["\ufeffCountry Name"]},
-    "shortlist_languages.csv": {"table_name": "spreisig_shortlist_languages", "key_columns": ["ISO3"]},
-    "un_shortlist.csv": {"table_name": "spreisig_un_shortlist", "key_columns": ["ISO3", "Official Name"]}
-}
+# Import custom files/modules
+import global_vars
 
 # Initial load of data from csv-json files
 def bulk_load(dynamodb_res, table_name, json_filename):
@@ -22,7 +16,37 @@ def bulk_load(dynamodb_res, table_name, json_filename):
                 Item=data[key]
             )
 
-# def add_record():
+def load(dynamodb_res, table_name, record_dict):
+    # print(record_dict)
+    # print(table_name)
+    table = dynamodb_res.Table(table_name)
+    table.put_item(
+        Item=record_dict
+    )
+
+def add_record(dynamodb_res):
+    # existing_tables = dynamodb_client.list_tables()['TableNames']
+    # if table_name not in existing_tables:
+    #     print("Cannot add record, table does not exist")
+    #     return
+
+    with open(global_vars.add_record_file, "r") as f:
+        lines = f.readlines()
+    record_dict = {}
+    table_name = ""
+    for line in lines:
+        filename = line.split(':')[0]
+        table_name = "spreisig_"+(filename.replace('.csv', ''))
+        record_data = line.split(':')[1]
+        record_data = record_data.split(',')
+        # print(filename)
+        # print(record_data)
+        for data in record_data:
+            key, value = data.split()
+            record_dict[key] = value
+            # print(key, value)
+        # print(record_dict)
+        load(dynamodb_res, table_name, record_dict)
 
 # def add_to_existing_record(filename):
 #     lines = []

@@ -1,1 +1,2 @@
-Usage: delete_table <table_name>
+
+Usage: delete_table [table_name]

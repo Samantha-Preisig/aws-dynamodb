@@ -26,6 +26,7 @@ def set_globals():
     }
     global_vars.data_dir = "data/"
     global_vars.help_dir = "help/"
+    global_vars.add_record_file = "add_record.txt"
 
 def config_and_setup():
     # AWS access key id and secret access key information found in configuration file (S5-S3.conf)
@@ -52,20 +53,13 @@ def config_and_setup():
             print("Unexpected error: %s" % e)
 
 def build_tables(dynamodb_res, dynamodb_client):
-    # TODO: create csv_files directory to organize workspace (use data/ instead of csv_files/)
     filenames = os.listdir(global_vars.data_dir)
     for filename in filenames:
-        table_name = ("spreisig"+"_"+filename).replace('.csv', '')
+        table_name = ("spreisig_"+filename).replace('.csv', '')
         create_table(dynamodb_res, dynamodb_client, table_name, global_vars.data_dir+filename)
-    
-    # create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_area", "shortlist_area.csv")
-    # create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_capitals", "shortlist_capitals.csv")
-    # create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_curpop", "shortlist_curpop.csv")
-    # create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_gdppc", "shortlist_gdppc.csv")
-    # # create_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_languages", "shortlist_languages.csv")
-    # create_table(dynamodb_res, dynamodb_client, "spreisig_un_shortlist", "un_shortlist.csv")
 
 def main():
+    # Setting global variables, AWS configuration, and initial bulk creation of tables
     set_globals()
     dynamodb_res, dynamodb_client = config_and_setup()
     build_tables(dynamodb_res, dynamodb_client)
@@ -80,11 +74,14 @@ def main():
         if(command == "help"):
             help(args)
 
+        elif(command == "create_new_table"):
+            cmd_create_table(dynamodb_res, dynamodb_client, args)
+
         elif(command == "delete_table"):
             cmd_delete_table(dynamodb_client, args)
 
         elif(command == "add_record"):
-            cmd_add_record(dynamodb_client, args)
+            cmd_add_record(dynamodb_res, args)
 
         elif(command == "quit"):
             break
