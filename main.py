@@ -10,8 +10,6 @@ from botocore.exceptions import ClientError
 # Import custom files/modules
 import global_vars
 from create_table import create_table
-# from delete_table import delete_table
-# from load_records import add_record
 from cli_functions import *
 
 def set_globals():
@@ -28,6 +26,7 @@ def set_globals():
     global_vars.json_dir = global_vars.data_dir+"json/"
     global_vars.help_dir = "help/"
     global_vars.add_records_file = global_vars.data_dir+"add_records.txt"
+    global_vars.delete_records_file = global_vars.data_dir+"delete_records.txt"
 
 def config_and_setup():
     # AWS access key id and secret access key information found in configuration file (S5-S3.conf)
@@ -57,6 +56,7 @@ def build_tables(dynamodb_res, dynamodb_client):
     filenames = os.listdir(global_vars.data_dir)
 
     filenames.remove(global_vars.add_records_file.replace(global_vars.data_dir, ''))
+    filenames.remove(global_vars.delete_records_file.replace(global_vars.data_dir, ''))
     filenames.remove("json")
     filenames.remove("README.md")
 
@@ -89,16 +89,14 @@ def main():
         elif(command == "add_record"):
             cmd_add_record(dynamodb_res)
 
+        elif(command == "delete_record"):
+            cmd_delete_record(dynamodb_res)
+
         elif(command == "quit"):
             break
 
         else:
             print("Not a valid command. Enter `help` for a list of valid commands")
-    # delete_table(dynamodb_client, "spreisig_shortlist_area")
-    # delete_table(dynamodb_client, "spreisig_shortlist_capitals")
-    # delete_table(dynamodb_client, "spreisig_shortlist_curpop")
-    # delete_table(dynamodb_client, "spreisig_shortlist_gdppc")
-    # delete_table(dynamodb_client, "spreisig_un_shortlist")
 
 if __name__ == "__main__":
     main()

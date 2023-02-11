@@ -43,5 +43,6 @@ def add_record(dynamodb_res):
                 key, value = data.split()
             record_dict[key] = value
         load(dynamodb_res, table_name, record_dict)
+        print("Record '" + line.replace('\n', '') + "' added")
 
 # def add_to_existing_record(filename):

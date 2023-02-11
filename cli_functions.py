@@ -6,6 +6,7 @@ import sys
 from create_table import create_new_table
 from delete_table import delete_table
 from load_records import add_record
+from delete_record import delete_record
 
 def cmd_help(args):
     if args:
@@ -35,3 +36,6 @@ def cmd_delete_table(dynamodb_client, args):
 
 def cmd_add_record(dynamodb_res):
     add_record(dynamodb_res)
+
+def cmd_delete_record(dynamodb_res):
+    delete_record(dynamodb_res)
