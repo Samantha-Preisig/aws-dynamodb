@@ -26,7 +26,7 @@ def set_globals():
     }
     global_vars.data_dir = "data/"
     global_vars.help_dir = "help/"
-    global_vars.add_record_file = "add_record.txt"
+    global_vars.add_records_file = global_vars.data_dir+"add_records.txt"
 
 def config_and_setup():
     # AWS access key id and secret access key information found in configuration file (S5-S3.conf)
@@ -54,6 +54,7 @@ def config_and_setup():
 
 def build_tables(dynamodb_res, dynamodb_client):
     filenames = os.listdir(global_vars.data_dir)
+    filenames.remove(global_vars.add_records_file.replace(global_vars.data_dir, ''))
     for filename in filenames:
         table_name = ("spreisig_"+filename).replace('.csv', '')
         create_table(dynamodb_res, dynamodb_client, table_name, global_vars.data_dir+filename)

@@ -3,4 +3,4 @@ def init():
     global dict_tables
     global data_dir
     global help_dir
-    global add_record_file
+    global add_records_file

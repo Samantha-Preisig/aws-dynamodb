@@ -1,0 +1,7 @@
+
+Usage: create_new_table [table_name] [partition_key | sort_key]
+
+Command arguments:
+table_name          required: name of table being created
+partition_key       required: partition key of table
+sort_key            optional: key to sort table
