@@ -16,17 +16,24 @@ def csv_to_json(csv_file_path, json_file_path, table_name): # TODO: Find referen
         csv_reader = csv.DictReader(csv_file_handler)
 
         # Convert each row into a dictionary and add the converted data to data_variable
-        languages = get_languages(csv_file_path)
-        i = 0
-        for row in csv_reader:
-            key = row[str(get_table_keys(table_name)[0])]
-            row["Languages"] = ' '.join(languages[i])
-            data_dict[key] = row
-            i += 1
+        if("languages" in table_name):
+            languages = get_languages(csv_file_path)
+            i = 0
+            for row in csv_reader:
+                key = row[str(get_table_keys(table_name)[0])]
+                row["Languages"] = ' '.join(languages[i])
+                data_dict[key] = row
+                i += 1
+        else:
+            for row in csv_reader:
+                key = row[str(get_table_keys(table_name)[0])]
+                data_dict[key] = row
         
     # Open a json file handler and use json.dumps method to dump the data
     with open(json_file_path, 'w', encoding='utf-8') as json_file_handler:
         json_file_handler.write(json.dumps(data_dict, indent=4))
+    
+    populate_global_columns(json_file_path, table_name)
 
 def get_languages(csv_file_path):
     with open(csv_file_path, newline='', encoding='utf8') as f:
@@ -42,6 +49,17 @@ def get_languages(csv_file_path):
                 languages.append(list(filter(None, row[2:])))
         # print(languages)
         return languages
+
+def populate_global_columns(json_file, table_name):
+    columns_added = False
+    with open(json_file, "r") as f:
+        data = json.load(f)
+        for data_key, data_value in data.items():
+            for key in data_value:
+                for table, table_data in global_vars.dict_tables.items():
+                    if(table_data["table_name"] == table_name and not columns_added):
+                        table_data["columns"].append(key)
+            columns_added = True
 
 def get_table_keys(table_name):
     for table, data in global_vars.dict_tables.items():
