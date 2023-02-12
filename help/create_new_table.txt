@@ -1,6 +1,8 @@
 
 Usage: create_new_table [table_name] [partition_key | sort_key]
 
+Creates a new (empty) table with a given partition (and optional sort) key
+
 Command arguments:
 table_name          required: name of table being created
 partition_key       required: partition key of table

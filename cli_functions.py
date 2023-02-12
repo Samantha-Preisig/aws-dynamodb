@@ -7,6 +7,7 @@ from create_table import create_new_table
 from delete_table import delete_table
 from load_records import add_record
 from delete_record import delete_record
+from dump import dump_table
 
 def cmd_help(args):
     if args:
@@ -39,3 +40,9 @@ def cmd_add_record(dynamodb_res):
 
 def cmd_delete_record(dynamodb_res):
     delete_record(dynamodb_res)
+
+def cmd_dump(dynamodb_res, args):
+    if(len(args) != 1):
+        print("Invalid arguments. Enter `help dump` for valid arguments")
+        return
+    dump_table(dynamodb_res, args[0])

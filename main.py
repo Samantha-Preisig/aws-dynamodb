@@ -15,12 +15,12 @@ from cli_functions import *
 def set_globals():
     global_vars.init()
     global_vars.dict_tables = {
-        "shortlist_area.csv": {"table_name": "spreisig_shortlist_area", "key_columns": ["ISO3", "Area"]},
-        "shortlist_capitals.csv": {"table_name": "spreisig_shortlist_capitals", "key_columns": ["ISO3", "Capital"]},
-        "shortlist_curpop.csv": {"table_name": "spreisig_shortlist_curpop", "key_columns": ["\ufeffCountry Name"]},
-        "shortlist_gdppc.csv": {"table_name": "spreisig_shortlist_gdppc", "key_columns": ["\ufeffCountry Name"]},
-        "shortlist_languages.csv": {"table_name": "spreisig_shortlist_languages", "key_columns": ["ISO3"]},
-        "un_shortlist.csv": {"table_name": "spreisig_un_shortlist", "key_columns": ["ISO3", "Official Name"]}
+        "shortlist_area.csv": {"table_name": "spreisig_shortlist_area", "key_columns": ["ISO3", "Area"], "columns": []},
+        "shortlist_capitals.csv": {"table_name": "spreisig_shortlist_capitals", "key_columns": ["ISO3", "Capital"], "columns": []},
+        "shortlist_curpop.csv": {"table_name": "spreisig_shortlist_curpop", "key_columns": ["\ufeffCountry Name"], "columns": []},
+        "shortlist_gdppc.csv": {"table_name": "spreisig_shortlist_gdppc", "key_columns": ["\ufeffCountry Name"], "columns": []},
+        "shortlist_languages.csv": {"table_name": "spreisig_shortlist_languages", "key_columns": ["ISO3"], "columns": []},
+        "un_shortlist.csv": {"table_name": "spreisig_un_shortlist", "key_columns": ["ISO3", "Official Name"], "columns": []}
     }
     global_vars.data_dir = "data/"
     global_vars.json_dir = global_vars.data_dir+"json/"
@@ -71,7 +71,7 @@ def main():
     build_tables(dynamodb_res, dynamodb_client)
 
     # CLI
-    print("\nWelcome to Sam's custom AWS CLI\nFor help command, type `help`\nTo stop CLI, type `quit`")
+    print("\nWelcome to Sam's custom AWS CLI\nFor help command, type `help`\nTo stop CLI, type `quit`\n")
     while True:
         cli = input("> ").split()
         command = cli[0]
@@ -91,6 +91,9 @@ def main():
 
         elif(command == "delete_record"):
             cmd_delete_record(dynamodb_res)
+
+        elif(command == "dump"):
+            cmd_dump(dynamodb_res, args)
 
         elif(command == "quit"):
             break

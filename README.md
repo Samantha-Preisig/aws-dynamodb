@@ -10,3 +10,4 @@
 - automatic bulk load is done when creating all tables from csv files
 - explain project structure
 - add_records.txt needs to contain case sensitive keys (to match the column headers)
+- dump command only displays information for a table if it's populated
