@@ -142,6 +142,113 @@ def create_table(dynamodb_res, dynamodb_client, table_name, csv_filename):
     else:
         print(table_name + " already exists")
 
+    if(json_filename == global_vars.json_dir+"shortlist_gdppc.json"):
+        build_economic_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_economic")
+
+# Economic data:
+#   - GDPPC (shortlist_gdppc.json)
+#   - Currency (shortlist_curpop.json) -> needs to be split into econ and non-econ json files
+def build_economic_table(dynamodb_res, dynamodb_client, table_name):
+    
+    # files[0] contains the json file with merged content, files[1:] are json files to be merged
+    files = [global_vars.json_dir+"shortlist_economic.json", global_vars.json_dir+"shortlist_curpop.json", global_vars.json_dir+"shortlist_gdppc.json"]
+    merge_json(files)
+
+    # # Creating economic table
+    # existing_tables = dynamodb_client.list_tables()['TableNames']
+    # if table_name not in existing_tables:
+    #     part_key, sort_key = get_table_keys(table_name)
+    #     if(sort_key == ""):
+    #         table = dynamodb_res.create_table(
+    #             TableName=table_name,
+    #             KeySchema=[
+    #                 {
+    #                     'AttributeName': part_key,
+    #                     'KeyType': 'HASH' # Partition key
+    #                 }
+    #             ],
+    #             AttributeDefinitions=[
+    #                 {
+    #                     'AttributeName': part_key,
+    #                     'AttributeType': get_key_type(part_key)
+    #                 }
+    #             ],
+    #             ProvisionedThroughput={
+    #                 'ReadCapacityUnits': 10,
+    #                 'WriteCapacityUnits': 10
+    #             }
+    #         )
+    #     else:
+    #         table = dynamodb_res.create_table(
+    #             TableName=table_name,
+    #             KeySchema=[
+    #                 {
+    #                     'AttributeName': part_key,
+    #                     'KeyType': 'HASH' # Partition key
+    #                 },
+    #                 {
+    #                     'AttributeName': sort_key,
+    #                     'KeyType': 'RANGE' # Sort key
+    #                 }
+    #             ],
+    #             AttributeDefinitions=[
+    #                 {
+    #                     'AttributeName': part_key,
+    #                     'AttributeType': get_key_type(part_key)
+    #                 },
+    #                 {
+    #                     'AttributeName': sort_key,
+    #                     'AttributeType': get_key_type(sort_key)
+    #                 },
+    #             ],
+    #             ProvisionedThroughput={
+    #                 'ReadCapacityUnits': 10,
+    #                 'WriteCapacityUnits': 10
+    #             }
+    #         )
+    #     # Print table information
+    #     print("Table status:", table.table_status, table.table_name)
+    #     table.wait_until_exists() # Wait until the table exists
+
+# The first filename in filenames list is the filename that contains the merge
+def merge_json(filenames):
+
+    data_dict1 = {}
+    data_dict2 = {}
+    with open(filenames[1], 'r') as in_json_file1:
+        json_dict1 = {}
+        json_dict1 = json.load(in_json_file1)
+
+        # data_dict1 = {}
+        for obj, val in json_dict1.items():
+            data_dict1[obj] = val
+
+    with open(filenames[0], 'w') as out_file:
+        out_file.write(json.dumps(data_dict1, indent=4))
+
+    with open(filenames[2], 'r') as in_json_file2:
+        json_dict2 = {}
+        json_dict2 = json.load(in_json_file2)
+
+        # data_dict2 = {}
+        for obj, val in json_dict2.items():
+            data_dict2[obj] = val
+    # merged_data_dict = data_dict1.copy()
+    # merged_data_dict.update(data_dict2)
+    # merged_data_dict = {**data_dict1, **data_dict2}
+    # print(merged_data_dict)
+
+    with open(filenames[0], 'a') as out_file:
+        out_file.write(json.dumps(data_dict2, indent=4))
+
+# Non-economic data:
+#   - Area (shortlist_area.json)
+#   - Capital (shortlist_capitals.json)
+#   - Population (shortlist_curpop.json)
+#   - Languages (shortlist_languages.json)
+#   - ISO2/Official Name (un_shortlist.json)
+# def build_noneconomic_table():
+
 def create_new_table(dynamodb_res, dynamodb_client, table_name, part_key, sort_key):
     existing_tables = dynamodb_client.list_tables()['TableNames']
     if table_name not in existing_tables:

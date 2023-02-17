@@ -10,7 +10,7 @@ from botocore.exceptions import ClientError
 # Import custom files/modules
 import global_vars
 from create_table import create_table
-from cli_functions import *
+from cli_commands import *
 
 def set_globals():
     global_vars.init()
