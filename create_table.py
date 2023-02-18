@@ -5,7 +5,7 @@ import pandas as pd # Not used (yet..?)
 
 # Import custome files/modules
 import global_vars
-from load_records import bulk_load
+from load_records import bulk_load, load_economic
 
 def csv_to_json(csv_file_path, json_file_path, table_name): # TODO: Find reference
     print("\nConverting csv to json for " + table_name + " ...")
@@ -149,97 +149,93 @@ def create_table(dynamodb_res, dynamodb_client, table_name, csv_filename):
 #   - GDPPC (shortlist_gdppc.json)
 #   - Currency (shortlist_curpop.json) -> needs to be split into econ and non-econ json files
 def build_economic_table(dynamodb_res, dynamodb_client, table_name):
+    # Creating economic table
+    existing_tables = dynamodb_client.list_tables()['TableNames']
     
-    # files[0] contains the json file with merged content, files[1:] are json files to be merged
-    files = [global_vars.json_dir+"shortlist_economic.json", global_vars.json_dir+"shortlist_curpop.json", global_vars.json_dir+"shortlist_gdppc.json"]
-    merge_json(files)
+    if table_name not in existing_tables:
+        print("\nBuildling economic table (spreisig_shortlist_economic) ...")
+        # files[0] contains the json file with merged content, files[1:] are json files to be merged
+        files = [global_vars.json_dir+"shortlist_economic.json", global_vars.json_dir+"shortlist_curpop.json", global_vars.json_dir+"shortlist_gdppc.json"]    
+        merge_json(files)
 
-    # # Creating economic table
-    # existing_tables = dynamodb_client.list_tables()['TableNames']
-    # if table_name not in existing_tables:
-    #     part_key, sort_key = get_table_keys(table_name)
-    #     if(sort_key == ""):
-    #         table = dynamodb_res.create_table(
-    #             TableName=table_name,
-    #             KeySchema=[
-    #                 {
-    #                     'AttributeName': part_key,
-    #                     'KeyType': 'HASH' # Partition key
-    #                 }
-    #             ],
-    #             AttributeDefinitions=[
-    #                 {
-    #                     'AttributeName': part_key,
-    #                     'AttributeType': get_key_type(part_key)
-    #                 }
-    #             ],
-    #             ProvisionedThroughput={
-    #                 'ReadCapacityUnits': 10,
-    #                 'WriteCapacityUnits': 10
-    #             }
-    #         )
-    #     else:
-    #         table = dynamodb_res.create_table(
-    #             TableName=table_name,
-    #             KeySchema=[
-    #                 {
-    #                     'AttributeName': part_key,
-    #                     'KeyType': 'HASH' # Partition key
-    #                 },
-    #                 {
-    #                     'AttributeName': sort_key,
-    #                     'KeyType': 'RANGE' # Sort key
-    #                 }
-    #             ],
-    #             AttributeDefinitions=[
-    #                 {
-    #                     'AttributeName': part_key,
-    #                     'AttributeType': get_key_type(part_key)
-    #                 },
-    #                 {
-    #                     'AttributeName': sort_key,
-    #                     'AttributeType': get_key_type(sort_key)
-    #                 },
-    #             ],
-    #             ProvisionedThroughput={
-    #                 'ReadCapacityUnits': 10,
-    #                 'WriteCapacityUnits': 10
-    #             }
-    #         )
-    #     # Print table information
-    #     print("Table status:", table.table_status, table.table_name)
-    #     table.wait_until_exists() # Wait until the table exists
+        table = dynamodb_res.create_table(
+            TableName=table_name,
+            KeySchema=[
+                {
+                    'AttributeName': "\ufeffCountry Name",
+                    'KeyType': 'HASH' # Partition key
+                },
+                {
+                    'AttributeName': "Currency",
+                    'KeyType': 'RANGE' # Sort key
+                }
+            ],
+            AttributeDefinitions=[
+                {
+                    'AttributeName': "\ufeffCountry Name",
+                    'AttributeType': get_key_type("\ufeffCountry Name")
+                },
+                {
+                    'AttributeName': "Currency",
+                    'AttributeType': get_key_type("Currency")
+                },
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 10,
+                'WriteCapacityUnits': 10
+            }
+        )
+        
+        # table = dynamodb_res.create_table(
+        #     TableName=table_name,
+        #     KeySchema=[
+        #         {
+        #             'AttributeName': "\ufeffCountry Name",
+        #             'KeyType': 'HASH' # Partition key
+        #         }
+        #     ],
+        #     AttributeDefinitions=[
+        #         {
+        #             'AttributeName': "\ufeffCountry Name",
+        #             'AttributeType': get_key_type("\ufeffCountry Name")
+        #         }
+        #     ],
+        #     ProvisionedThroughput={
+        #         'ReadCapacityUnits': 10,
+        #         'WriteCapacityUnits': 10
+        #     }
+        # )
+        # Print table information
+        print("Table status:", table.table_status, table.table_name)
+        table.wait_until_exists() # Wait until the table exists
+        load_economic(dynamodb_res, table_name, global_vars.json_dir+"shortlist_economic.json")
+    else:
+        print(table_name + " already exists")
 
 # The first filename in filenames list is the filename that contains the merge
 def merge_json(filenames):
 
-    data_dict1 = {}
-    data_dict2 = {}
-    with open(filenames[1], 'r') as in_json_file1:
-        json_dict1 = {}
-        json_dict1 = json.load(in_json_file1)
+    with open(filenames[1], 'r') as json_curpop, open(filenames[2], 'r') as json_gdppc:
+        curpop_dict = json.load(json_curpop)
+        gdppc_dict = json.load(json_gdppc)
 
-        # data_dict1 = {}
-        for obj, val in json_dict1.items():
-            data_dict1[obj] = val
-
-    with open(filenames[0], 'w') as out_file:
-        out_file.write(json.dumps(data_dict1, indent=4))
-
-    with open(filenames[2], 'r') as in_json_file2:
-        json_dict2 = {}
-        json_dict2 = json.load(in_json_file2)
-
-        # data_dict2 = {}
-        for obj, val in json_dict2.items():
-            data_dict2[obj] = val
-    # merged_data_dict = data_dict1.copy()
-    # merged_data_dict.update(data_dict2)
-    # merged_data_dict = {**data_dict1, **data_dict2}
-    # print(merged_data_dict)
-
-    with open(filenames[0], 'a') as out_file:
-        out_file.write(json.dumps(data_dict2, indent=4))
+        data_dict = {}
+        for key1, value1 in curpop_dict.items():
+            country_dict = {}
+            for item1 in value1:
+                if(item1 == "\ufeffCountry Name" or item1 == "Currency"):
+                    country_dict[item1] = value1[item1]
+                
+                for key2, value2 in gdppc_dict.items():
+                    for item2 in value2:
+                        if(item2.isnumeric()):
+                            # print(">" + item)
+                            country_dict[item2] = value2[item2]
+            data_dict[key1] = country_dict
+            # print(data_dict)
+    
+    with open(filenames[0], 'w') as out_json:
+        out_json.write(json.dumps(data_dict, indent=4))
 
 # Non-economic data:
 #   - Area (shortlist_area.json)

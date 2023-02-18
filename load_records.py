@@ -45,4 +45,16 @@ def add_record(dynamodb_res):
         load(dynamodb_res, table_name, record_dict)
         print("Record '" + line.replace('\n', '') + "' added")
 
+def load_economic(dynamodb_res, table_name, json_filename):
+    table = dynamodb_res.Table(table_name)
+    
+    with open(json_filename, "r") as json_file:
+        data = json.load(json_file)
+
+        for key, value in data.items():
+            data[key] = {key: value for key, value in data[key].items() if key}
+            table.put_item(
+                Item=data[key]
+            )
+
 # def add_to_existing_record(filename):
