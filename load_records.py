@@ -7,11 +7,11 @@ import global_vars
 # Initial load of data from csv-json files
 def bulk_load(dynamodb_res, table_name, json_filename):
     table = dynamodb_res.Table(table_name)
-    
+
     with open(json_filename, "r") as json_file:
         data = json.load(json_file)
         for key, value in data.items():
-            data[key] = {key: value for key, value in data[key].items() if key} # **Only reads FIRST language listed if country has more than 1 language**
+            data[key] = {key: value for key, value in data[key].items() if key}
             table.put_item(
                 Item=data[key]
             )

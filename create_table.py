@@ -69,12 +69,11 @@ def get_table_keys(table_name):
             else:
                 return data["key_columns"][0], data["key_columns"][1]
 
-def get_key_type(key): # TODO: need area to be N instead of S
-    # if(key == "Area"):
-    #     return 'N'
-    # else:
-    #     return 'S'
-    return 'S'
+def get_key_type(key):
+    if(key.isnumeric() or key == "Area"):
+        return 'N'
+    else:
+        return 'S'
 
 def create_table(dynamodb_res, dynamodb_client, table_name, csv_filename):
     json_filename = csv_filename.replace(global_vars.data_dir, global_vars.json_dir) # json files placed in data/json/
@@ -149,7 +148,6 @@ def create_table(dynamodb_res, dynamodb_client, table_name, csv_filename):
 #   - GDPPC (shortlist_gdppc.json)
 #   - Currency (shortlist_curpop.json) -> needs to be split into econ and non-econ json files
 def build_economic_table(dynamodb_res, dynamodb_client, table_name):
-    # Creating economic table
     existing_tables = dynamodb_client.list_tables()['TableNames']
     
     if table_name not in existing_tables:
@@ -164,47 +162,19 @@ def build_economic_table(dynamodb_res, dynamodb_client, table_name):
                 {
                     'AttributeName': "\ufeffCountry Name",
                     'KeyType': 'HASH' # Partition key
-                },
-                {
-                    'AttributeName': "Currency",
-                    'KeyType': 'RANGE' # Sort key
                 }
             ],
             AttributeDefinitions=[
                 {
                     'AttributeName': "\ufeffCountry Name",
                     'AttributeType': get_key_type("\ufeffCountry Name")
-                },
-                {
-                    'AttributeName': "Currency",
-                    'AttributeType': get_key_type("Currency")
-                },
+                }
             ],
             ProvisionedThroughput={
                 'ReadCapacityUnits': 10,
                 'WriteCapacityUnits': 10
             }
         )
-        
-        # table = dynamodb_res.create_table(
-        #     TableName=table_name,
-        #     KeySchema=[
-        #         {
-        #             'AttributeName': "\ufeffCountry Name",
-        #             'KeyType': 'HASH' # Partition key
-        #         }
-        #     ],
-        #     AttributeDefinitions=[
-        #         {
-        #             'AttributeName': "\ufeffCountry Name",
-        #             'AttributeType': get_key_type("\ufeffCountry Name")
-        #         }
-        #     ],
-        #     ProvisionedThroughput={
-        #         'ReadCapacityUnits': 10,
-        #         'WriteCapacityUnits': 10
-        #     }
-        # )
         # Print table information
         print("Table status:", table.table_status, table.table_name)
         table.wait_until_exists() # Wait until the table exists
@@ -214,7 +184,6 @@ def build_economic_table(dynamodb_res, dynamodb_client, table_name):
 
 # The first filename in filenames list is the filename that contains the merge
 def merge_json(filenames):
-
     with open(filenames[1], 'r') as json_curpop, open(filenames[2], 'r') as json_gdppc:
         curpop_dict = json.load(json_curpop)
         gdppc_dict = json.load(json_gdppc)
@@ -229,10 +198,8 @@ def merge_json(filenames):
                 for key2, value2 in gdppc_dict.items():
                     for item2 in value2:
                         if(item2.isnumeric()):
-                            # print(">" + item)
                             country_dict[item2] = value2[item2]
             data_dict[key1] = country_dict
-            # print(data_dict)
     
     with open(filenames[0], 'w') as out_json:
         out_json.write(json.dumps(data_dict, indent=4))

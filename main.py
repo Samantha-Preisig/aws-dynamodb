@@ -15,12 +15,12 @@ from cli_commands import *
 def set_globals():
     global_vars.init()
     global_vars.dict_tables = {
-        "shortlist_area.csv": {"table_name": "spreisig_shortlist_area", "key_columns": ["ISO3", "Area"], "columns": []},
-        "shortlist_capitals.csv": {"table_name": "spreisig_shortlist_capitals", "key_columns": ["ISO3", "Capital"], "columns": []},
+        "shortlist_area.csv": {"table_name": "spreisig_shortlist_area", "key_columns": ["ISO3"], "columns": []},
+        "shortlist_capitals.csv": {"table_name": "spreisig_shortlist_capitals", "key_columns": ["ISO3"], "columns": []},
         "shortlist_curpop.csv": {"table_name": "spreisig_shortlist_curpop", "key_columns": ["\ufeffCountry Name"], "columns": []},
         "shortlist_gdppc.csv": {"table_name": "spreisig_shortlist_gdppc", "key_columns": ["\ufeffCountry Name"], "columns": []},
         "shortlist_languages.csv": {"table_name": "spreisig_shortlist_languages", "key_columns": ["ISO3"], "columns": []},
-        "un_shortlist.csv": {"table_name": "spreisig_un_shortlist", "key_columns": ["ISO3", "Official Name"], "columns": []}
+        "un_shortlist.csv": {"table_name": "spreisig_un_shortlist", "key_columns": ["ISO3"], "columns": []}
     }
     global_vars.data_dir = "data/"
     global_vars.json_dir = global_vars.data_dir+"json/"
