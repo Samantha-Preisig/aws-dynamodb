@@ -12,6 +12,7 @@ A2/
 |-- help/
 |-- main.py
 |-- cli_commands.py
+|-- global_vars.py
 |-- README.md
 ```
 - `data/` holds `json/` directory, all csv files, `add_records.txt`, and `delete_records.txt`

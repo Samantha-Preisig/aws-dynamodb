@@ -98,6 +98,9 @@ def main():
         elif(command == "dump"):
             cmd_dump(dynamodb_res, args)
 
+        elif(command == "build_report"):
+            cmd_build_report(args)
+
         elif(command == "quit"):
             break
 
