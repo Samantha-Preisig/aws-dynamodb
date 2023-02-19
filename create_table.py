@@ -13,7 +13,7 @@ def csv_to_json(csv_file_path, json_file_path, table_name): # TODO: Find referen
     data_dict = {} # Create a dictionary
 
     # Opening a csv file handler
-    with open(csv_file_path, encoding='utf-8') as csv_file_handler:
+    with open(csv_file_path, 'r', encoding='utf-8-sig') as csv_file_handler:
         csv_reader = csv.DictReader(csv_file_handler)
 
         # Convert each row into a dictionary and add the converted data to data_variable
@@ -31,13 +31,13 @@ def csv_to_json(csv_file_path, json_file_path, table_name): # TODO: Find referen
                 data_dict[key] = row
         
     # Open a json file handler and use json.dumps method to dump the data
-    with open(json_file_path, 'w', encoding='utf-8') as json_file_handler:
+    with open(json_file_path, 'w') as json_file_handler:
         json_file_handler.write(json.dumps(data_dict, indent=4))
     
     populate_global_columns(json_file_path, table_name)
 
 def get_languages(csv_file_path):
-    with open(csv_file_path, newline='', encoding='utf8') as f:
+    with open(csv_file_path, newline='', encoding='utf-8-sig') as f:
         csv_reader = csv.reader(f)
         data = list(csv_reader)
 
@@ -217,7 +217,7 @@ def merge_information(filenames):
             for key1, value1 in curpop_dict.items():
                 country_dict = {}
                 for item1 in value1:
-                    if(item1 == "\ufeffCountry Name" or item1 == "Currency"):
+                    if(item1 == "Country Name" or item1 == "Currency"):
                         country_dict[item1] = value1[item1]
                     
                     for key2, value2 in gdppc_dict.items():

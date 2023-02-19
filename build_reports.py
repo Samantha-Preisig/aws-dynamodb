@@ -28,6 +28,18 @@ def get_non_econ_item(dynamodb_res, country_name, item_key):
         except:
             return "-"
 
+def get_econ_item(dynamodb_res, country_name, item_key):
+    table = dynamodb_res.Table("spreisig_economic")
+
+    response = table.query(
+        KeyConditionExpression=Key("Country Name").eq(country_name)
+    )
+    for i in response["Items"]:
+        try:
+            return i[item_key]
+        except:
+            return "-"
+
 def build_country_report(dynamodb_res, country_name):
     
     doc = SimpleDocTemplate("Report_A.pdf", pagesize=letter, rightMargin=12, leftMargin=12, topMargin=12, bottomMargin=12)
@@ -43,7 +55,7 @@ def build_country_report(dynamodb_res, country_name):
 
     # Gathering info for pop_table
     pop_info = []
-    pop_values = []
+    pop_info.append(["Year", "Population", "Rank", "Population Density\n(people/sq km)", "Rank"])
     with open(global_vars.json_dir+"shortlist_non_economic.json", 'r') as json_file:
         data_dict = json.load(json_file)
 
@@ -65,14 +77,34 @@ def build_country_report(dynamodb_res, country_name):
 
     # Population table
     data = pop_info
-    pop_table = Table(data, colWidths=[100 for i in range(1,6)], rowHeights=[20 for i in range(1,len(pop_info)+1)])
+    pop_table = Table(data, colWidths=[100 for i in range(1,6)], rowHeights=[25 for i in range(1,len(pop_info)+1)])
     pop_table.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1, colors.black),
                                        ("GRID", (0, 0), (-1, -1), 1, colors.black),
                                        ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
+    
+    # Gathering info for economic table
+    econ_info = []
+    econ_info.append(["Year", "GDPPC", "Rank"])
+    with open(global_vars.json_dir+"shortlist_economic.json", 'r') as json_file:
+        data_dict = json.load(json_file)
+
+        for key in data_dict:
+            # print(key)
+            for value in data_dict[key]:
+                # print(value)
+                econ_values = []
+                if(key == country_name and value.isnumeric()):
+                    econ_values.append(value)
+                    gdppc = get_econ_item(dynamodb_res, country_name, value)
+                    econ_values.append(str(gdppc))
+                    # print(str(get_non_econ_item(dynamodb_res, country_name, value)))
+                    econ_values.append("<rank>")
+                    econ_info.append(econ_values)
+    # print(econ_info)
+
     # Economic table
-    data = [["Year", "GDPPC", "Rank"],
-            []]
-    econ_table = Table(data, colWidths=[167 for i in range(1,6)], rowHeights=[40 for i in range(1,3)])
+    data = econ_info
+    econ_table = Table(data, colWidths=[167 for i in range(1,6)], rowHeights=[25 for i in range(1,len(econ_info)+1)])
     econ_table.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1, colors.black),
                                        ("GRID", (0, 0), (-1, -1), 1, colors.black),
                                        ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
@@ -80,16 +112,17 @@ def build_country_report(dynamodb_res, country_name):
     styles = getSampleStyleSheet()
 
     flowables = [
-        Paragraph('Name of Country', styles['Title']),
+        Paragraph(country_name, styles['Title']),
         Paragraph('[Official Name: ' + str(get_non_econ_item(dynamodb_res, country_name, "Official Name")) + ']'),
         Spacer(1*cm, 1*cm),
         general_table,
         Spacer(1*cm, 1*cm),
-        Paragraph('Text after general_table\nPopulation table:'),
+        Paragraph('Population'),
+        Paragraph('Table of Population, Population Density, and their respective world ranking for that year ordered by year:'),
         pop_table,
         Spacer(1*cm, 1*cm),
-        Paragraph('Text after pop_table\nEconomics table:'),
-        Paragraph('Currency:'),
+        Paragraph('Economics\nCurrency: ' + str(get_econ_item(dynamodb_res, country_name, "Currency"))),
+        Paragraph('\nTable of GDP per capita (GDPPC) from earliet year to latest year, and rank within the world for that year'),
         econ_table
     ]
     doc.build(flowables, onFirstPage=onFirstPage)

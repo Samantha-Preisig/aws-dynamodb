@@ -36,8 +36,8 @@ def add_record(dynamodb_res):
         for data in record_data:
             if(len(data.split()) == 3): # Example, key = Country Name, value = Canada
                 key = data.split()[0] + " " + data.split()[1]
-                if(key == "Country Name" and not record_dict):
-                    key = "\ufeff"+key
+                # if(key == "Country Name" and not record_dict):
+                #     key = "\ufeff"+key
                 value = data.split()[2]
             else:
                 key, value = data.split()
