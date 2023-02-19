@@ -229,25 +229,37 @@ def merge_information(filenames):
                         if(f == global_vars.json_dir+"shortlist_area.json" and item == "ISO3"):
                             country_dict[item] = value[item]
                         elif(f == global_vars.json_dir+"shortlist_area.json" and item == "Area"):
-                            country_dict[item] = value[item]
+                            country_dict[item] = int(value[item])
                         elif(f == global_vars.json_dir+"shortlist_capitals.json" and item == "Capital"):
                             country_dict[item] = value[item]
                         elif(f == global_vars.json_dir+"shortlist_curpop.json" and item.isnumeric() and value[item] != ''):
-                            country_dict[item] = value[item]
+                            country_dict[item] = int(value[item])
                         elif(f == global_vars.json_dir+"shortlist_languages.json" and item == "Languages"):
                             country_dict[item] = value[item]
                         elif(f == global_vars.json_dir+"un_shortlist.json" and item == "Official Name"):
                             country_dict[item] = value[item]
-                    data_dict[key] = country_dict
-                    # print(data_dict)
+                    if(len(key) != 3):
+                        new_key = get_iso3(key)
+                        data_dict[new_key] = country_dict
+                    else:
+                        data_dict[key] = country_dict
                     dict_list.append(data_dict)
-        print(dict_list)
 
         for d in dict_list:
             merge(data_dict, d)
             
         with open(filenames[0], 'w') as out_json:
             out_json.write(json.dumps(data_dict, indent=4))
+
+def get_iso3(country_key):
+    with open(global_vars.json_dir+"shortlist_capitals.json", 'r') as json_file:
+        json_dict = json.load(json_file)
+
+        for key, value in json_dict.items():
+            for item in value:
+                if(item == "Country Name" and value[item] == country_key):
+                    return key
+    return None
 
 # Economic data:
 #   - GDPPC (shortlist_gdppc.json)
