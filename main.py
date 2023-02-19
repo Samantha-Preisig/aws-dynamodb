@@ -9,7 +9,7 @@ from botocore.exceptions import ClientError
 
 # Import custom files/modules
 import global_vars
-from create_table import create_table
+from create_table import build_json, create_tables
 from cli_commands import *
 
 def set_globals():
@@ -20,7 +20,9 @@ def set_globals():
         "shortlist_curpop.csv": {"table_name": "spreisig_shortlist_curpop", "key_columns": ["\ufeffCountry Name"], "columns": []},
         "shortlist_gdppc.csv": {"table_name": "spreisig_shortlist_gdppc", "key_columns": ["\ufeffCountry Name"], "columns": []},
         "shortlist_languages.csv": {"table_name": "spreisig_shortlist_languages", "key_columns": ["ISO3"], "columns": []},
-        "un_shortlist.csv": {"table_name": "spreisig_un_shortlist", "key_columns": ["ISO3"], "columns": []}
+        "un_shortlist.csv": {"table_name": "spreisig_un_shortlist", "key_columns": ["ISO3"], "columns": []},
+        "shortlist_economic": {"table_name": "spreisig_economic", "key_columns": ["\ufeffCountry Name"], "columns": []},
+        "shortlist_non_economic": {"table_name": "spreisig_non_economic", "key_columns": ["ISO3"], "columns": []}
     }
     global_vars.data_dir = "data/"
     global_vars.json_dir = global_vars.data_dir+"json/"
@@ -62,7 +64,8 @@ def build_tables(dynamodb_res, dynamodb_client):
 
     for filename in filenames:
         table_name = ("spreisig_"+filename).replace('.csv', '')
-        create_table(dynamodb_res, dynamodb_client, table_name, global_vars.data_dir+filename)
+        build_json(table_name, global_vars.data_dir+filename)
+    create_tables(dynamodb_res, dynamodb_client)
 
 def main():
     # Setting global variables, AWS configuration, and initial bulk creation of tables

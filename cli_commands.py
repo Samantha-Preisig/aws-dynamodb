@@ -3,7 +3,6 @@ import sys
 # import boto3
 
 # Import custom files/modules
-from create_table import create_new_table
 from delete_table import delete_table
 from load_records import add_record
 from delete_record import delete_record
