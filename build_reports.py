@@ -5,16 +5,36 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.lib import colors
 
+import boto3
+import json
+from boto3.dynamodb.conditions import Key, Attr
+
+# Import custome files/modules
+import global_vars
+from create_table import get_iso3
+
 def onFirstPage(canvas, document):
     canvas.drawCentredString(100, 100, 'Text drawn with onFirstPage')
 
-def build_country_report(country_name):
+def get_non_econ_item(dynamodb_res, country_name, item_key):
+    table = dynamodb_res.Table("spreisig_non_economic")
+
+    response = table.query(
+        KeyConditionExpression=Key("ISO3").eq(get_iso3(country_name))
+    )
+    for i in response["Items"]:
+        try:
+            return i[item_key]
+        except:
+            return "-"
+
+def build_country_report(dynamodb_res, country_name):
     
     doc = SimpleDocTemplate("Report_A.pdf", pagesize=letter, rightMargin=12, leftMargin=12, topMargin=12, bottomMargin=12)
 
     # Top table (area, languages, capital)
-    data = [["Area:"],
-            ["Official/National Languages:\nCapital City:"]]
+    data = [["Area: " + str(get_non_econ_item(dynamodb_res, country_name, "Area"))],
+            ["Official/National Languages: " + str(get_non_econ_item(dynamodb_res, country_name, "Languages")) + "\nCapital City: " + str(get_non_econ_item(dynamodb_res, country_name, "Capital"))]]
     general_table = Table(data, colWidths=200, rowHeights=[40 for i in range(1,3)])
     general_table.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1, colors.black),
                                        ("GRID", (0, 0), (-1, -1), 1, colors.black),
@@ -38,7 +58,7 @@ def build_country_report(country_name):
 
     flowables = [
         Paragraph('Name of Country', styles['Title']),
-        Paragraph('Official Name'),
+        Paragraph('[Official Name: ' + str(get_non_econ_item(dynamodb_res, country_name, "Official Name")) + ']'),
         Spacer(1*cm, 1*cm),
         general_table,
         Spacer(1*cm, 1*cm),
@@ -51,7 +71,7 @@ def build_country_report(country_name):
     ]
     doc.build(flowables, onFirstPage=onFirstPage)
 
-def build_global_report():
+def build_global_report(dynamodb_res, year):
     
     doc = SimpleDocTemplate("Report_B.pdf", pagesize=letter, rightMargin=12, leftMargin=12, topMargin=12, bottomMargin=12)
 

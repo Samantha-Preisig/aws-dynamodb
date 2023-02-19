@@ -46,14 +46,14 @@ def cmd_dump(dynamodb_res, args): #TODO
         return
     dump_table(dynamodb_res, args[0])
 
-def cmd_build_report(args):
+def cmd_build_report(dynamodb_res, args):
     if(len(args) != 2):
         print("Invalid arguments. Enter `help build_report` for valid arguments")
         return
     if(args[0] == "-c"):
-        build_country_report(args[1]) # Country name is passed
+        build_country_report(dynamodb_res, args[1]) # Country name is passed
     elif(args[0] == "-g"):
-        build_global_report(args[1]) # Year is passed
+        build_global_report(dynamodb_res, args[1]) # Year is passed
     else:
         print("Invalid arguments. Enter `help build_report` for valid arguments")
         return
