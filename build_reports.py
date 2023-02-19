@@ -14,7 +14,7 @@ import global_vars
 from create_table import get_iso3
 
 def onFirstPage(canvas, document):
-    canvas.drawCentredString(100, 100, 'Text drawn with onFirstPage')
+    canvas.drawCentredString(100, 100, '')
 
 def get_non_econ_item(dynamodb_res, country_name, item_key):
     table = dynamodb_res.Table("spreisig_non_economic")
@@ -33,16 +33,39 @@ def build_country_report(dynamodb_res, country_name):
     doc = SimpleDocTemplate("Report_A.pdf", pagesize=letter, rightMargin=12, leftMargin=12, topMargin=12, bottomMargin=12)
 
     # Top table (area, languages, capital)
-    data = [["Area: " + str(get_non_econ_item(dynamodb_res, country_name, "Area"))],
+    area = get_non_econ_item(dynamodb_res, country_name, "Area")
+    data = [["Area: " + str(area)],
             ["Official/National Languages: " + str(get_non_econ_item(dynamodb_res, country_name, "Languages")) + "\nCapital City: " + str(get_non_econ_item(dynamodb_res, country_name, "Capital"))]]
     general_table = Table(data, colWidths=200, rowHeights=[40 for i in range(1,3)])
     general_table.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1, colors.black),
                                        ("GRID", (0, 0), (-1, -1), 1, colors.black),
                                        ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
+
+    # Gathering info for pop_table
+    pop_info = []
+    pop_values = []
+    with open(global_vars.json_dir+"shortlist_non_economic.json", 'r') as json_file:
+        data_dict = json.load(json_file)
+
+        for key in data_dict:
+            for value in data_dict[key]:
+                pop_values = []
+                if(key == country_name and value.isnumeric()):
+                    pop_values.append(value)
+                    pop = get_non_econ_item(dynamodb_res, country_name, value)
+                    pop_values.append(str(pop))
+                    # print(str(get_non_econ_item(dynamodb_res, country_name, value)))
+                    pop_values.append("<rank>")
+                    density = round(pop/area, 2)
+                    pop_values.append(str(density))
+                    pop_values.append("<rank>")
+                    pop_info.append(pop_values)
+    # print(pop_info)
+    # print(len(pop_info))
+
     # Population table
-    data = [["Year", "Population", "Rank", "Population Density", "Rank"],
-            []]
-    pop_table = Table(data, colWidths=[100 for i in range(1,6)], rowHeights=[40 for i in range(1,3)])
+    data = pop_info
+    pop_table = Table(data, colWidths=[100 for i in range(1,6)], rowHeights=[20 for i in range(1,len(pop_info)+1)])
     pop_table.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1, colors.black),
                                        ("GRID", (0, 0), (-1, -1), 1, colors.black),
                                        ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
