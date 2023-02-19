@@ -193,6 +193,19 @@ def create_tables(dynamodb_res, dynamodb_client):
         else:
             print(table_name + " already exists")
 
+def get_country_name(iso3):
+    with open(global_vars.json_dir+"shortlist_capitals.json", 'r') as json_file:
+        json_dict = json.load(json_file)
+
+        item_found = False
+        for key, value in json_dict.items():
+            for item in value:
+                if(item == "ISO3" and value[item] == iso3):
+                    item_found = True
+                if(item_found and item == "Country Name"):
+                    return value[item]
+    return None
+
 # The first filename in filenames list is the filename that contains the merge
 def merge_information(filenames):
     data_dict = {}
@@ -238,8 +251,13 @@ def merge_information(filenames):
                             country_dict[item] = value[item]
                         elif(f == global_vars.json_dir+"un_shortlist.json" and item == "Official Name"):
                             country_dict[item] = value[item]
-                    if(len(key) != 3):
-                        new_key = get_iso3(key)
+                    # if(len(key) != 3):
+                    #     new_key = get_iso3(key)
+                    #     data_dict[new_key] = country_dict
+                    # else:
+                    #     data_dict[key] = country_dict
+                    if(len(key) == 3):
+                        new_key = get_country_name(key)
                         data_dict[new_key] = country_dict
                     else:
                         data_dict[key] = country_dict
