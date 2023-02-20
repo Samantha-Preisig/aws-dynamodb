@@ -25,12 +25,3 @@ def dump_table(dynamodb_res, table_name):
                 for i in range(0, len(data["columns"])):
                     print(item[data["columns"][i]] + "\t", end='')
                 print("")
-
-# def dump_table(dynamodb_client, table_name):
-#     if(not table_exists(table_name)):
-#         print("Table does not exist")
-#         return
-    
-#     table_json = global_vars.json_dir + table_name.replace('spreisig_', '') + ".json"
-#     df = pd.read_json(table_json)
-#     print(df.T)

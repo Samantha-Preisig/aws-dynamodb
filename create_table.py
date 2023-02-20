@@ -81,72 +81,6 @@ def build_json(table_name, csv_filename):
     json_filename = json_filename.replace('.csv', '.json') # Creating json filename (replacing csv to json extension)
     csv_to_json(csv_filename, json_filename, table_name) # Convert csv to json file
 
-    # existing_tables = dynamodb_client.list_tables()['TableNames']
-    # if table_name not in existing_tables:
-    #     part_key, sort_key = get_table_keys(table_name)
-    #     if(sort_key == ""):
-    #         table = dynamodb_res.create_table(
-    #             TableName=table_name,
-    #             KeySchema=[
-    #                 {
-    #                     'AttributeName': part_key,
-    #                     'KeyType': 'HASH' # Partition key
-    #                 }
-    #             ],
-    #             AttributeDefinitions=[
-    #                 {
-    #                     'AttributeName': part_key,
-    #                     'AttributeType': get_key_type(part_key)
-    #                 }
-    #             ],
-    #             ProvisionedThroughput={
-    #                 'ReadCapacityUnits': 10,
-    #                 'WriteCapacityUnits': 10
-    #             }
-    #         )
-    #     else:
-    #         table = dynamodb_res.create_table(
-    #             TableName=table_name,
-    #             KeySchema=[
-    #                 {
-    #                     'AttributeName': part_key,
-    #                     'KeyType': 'HASH' # Partition key
-    #                 },
-    #                 {
-    #                     'AttributeName': sort_key,
-    #                     'KeyType': 'RANGE' # Sort key
-    #                 }
-    #             ],
-    #             AttributeDefinitions=[
-    #                 {
-    #                     'AttributeName': part_key,
-    #                     'AttributeType': get_key_type(part_key)
-    #                 },
-    #                 {
-    #                     'AttributeName': sort_key,
-    #                     'AttributeType': get_key_type(sort_key)
-    #                 },
-    #             ],
-    #             ProvisionedThroughput={
-    #                 'ReadCapacityUnits': 10,
-    #                 'WriteCapacityUnits': 10
-    #             }
-    #         )
-    #     # Print table information
-    #     print("Table status:", table.table_status, table.table_name)
-    #     table.wait_until_exists() # Wait until the table exists
-        
-    #     # Load data from json file into table
-    #     bulk_load(dynamodb_res, table_name, json_filename)
-    #     # print("Table item count: ", table.item_count) # Print item count for table
-    # else:
-    #     print(table_name + " already exists")
-
-    # if(json_filename == global_vars.json_dir+"shortlist_gdppc.json"):
-    #     build_economic_table(dynamodb_res, dynamodb_client, "spreisig_shortlist_economic")
-    # if(json_filename == global_vars.json_dir+"un_shortlist.json"):
-    #     build_noneconomic_table(dynamodb_res, dynamodb_client)
-
 def get_relevant_filenames(table_name):
     if(table_name == "spreisig_economic"):
         return [global_vars.json_dir+"shortlist_economic.json", global_vars.json_dir+"shortlist_curpop.json", global_vars.json_dir+"shortlist_gdppc.json"]
@@ -206,6 +140,17 @@ def get_country_name(iso3):
                     return value[item]
     return None
 
+# Economic data:
+#   - GDPPC (shortlist_gdppc.json)
+#   - Currency (shortlist_curpop.json) -> needs to be split into econ and non-econ json files
+
+# Non-economic data:
+#   - Area (shortlist_area.json)
+#   - Capital (shortlist_capitals.json)
+#   - Population (shortlist_curpop.json)
+#   - Languages (shortlist_languages.json)
+#   - ISO2/Official Name (un_shortlist.json)
+
 # The first filename in filenames list is the filename that contains the merge
 def merge_information(filenames):
     data_dict = {}
@@ -240,6 +185,8 @@ def merge_information(filenames):
                     country_dict = {}
                     for item in value:
                         if(f == global_vars.json_dir+"shortlist_area.json" and item == "ISO3"):
+                            country_dict[item] = value[item]
+                        elif(f == global_vars.json_dir+"shortlist_area.json" and item == "Country Name"):
                             country_dict[item] = value[item]
                         elif(f == global_vars.json_dir+"shortlist_area.json" and item == "Area"):
                             country_dict[item] = int(value[item])
@@ -278,36 +225,3 @@ def get_iso3(country_key):
                 if(item == "Country Name" and value[item] == country_key):
                     return key
     return None
-
-# Economic data:
-#   - GDPPC (shortlist_gdppc.json)
-#   - Currency (shortlist_curpop.json) -> needs to be split into econ and non-econ json files
-
-# Non-economic data:
-#   - Area (shortlist_area.json)
-#   - Capital (shortlist_capitals.json)
-#   - Population (shortlist_curpop.json)
-#   - Languages (shortlist_languages.json)
-#   - ISO2/Official Name (un_shortlist.json)
-# def build_noneconomic_table(dynamodb_res, dynamodb_client):
-
-# def merge_non_econ():
-#     with open(filenames[1], 'r') as json_curpop, open(filenames[2], 'r') as json_gdppc:
-#         curpop_dict = json.load(json_curpop)
-#         gdppc_dict = json.load(json_gdppc)
-
-#         data_dict = {}
-#         for key1, value1 in curpop_dict.items():
-#             country_dict = {}
-#             for item1 in value1:
-#                 if(item1 == "\ufeffCountry Name" or item1 == "Currency"):
-#                     country_dict[item1] = value1[item1]
-                
-#                 for key2, value2 in gdppc_dict.items():
-#                     for item2 in value2:
-#                         if(item2.isnumeric()):
-#                             country_dict[item2] = value2[item2]
-#             data_dict[key1] = country_dict
-    
-#     with open(filenames[0], 'w') as out_json:
-#         out_json.write(json.dumps(data_dict, indent=4))

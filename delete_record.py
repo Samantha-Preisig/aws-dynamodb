@@ -29,8 +29,6 @@ def delete_record(dynamodb_res):
             value = ""
             if(len(data.split()) >= 3): # Example, key = Country Name, value = Canada
                 key = data.split()[0] + " " + data.split()[1] # Largest key contains 2 words with given csv tables
-                # if(key == "Country Name" and not table_keys):
-                #     key = "\ufeff"+key
                 for i in range(2, len(data.split())-1):
                     value += data.split()[i] + " "
                 value += data.split()[-1]
