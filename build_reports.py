@@ -5,6 +5,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.lib import colors
 from collections import OrderedDict
+import numpy as np
 
 import boto3
 import json
@@ -81,7 +82,7 @@ def get_rank(dynamodb_res, country_name, item_key, r_id):
     ranks = {}
     for i in response["Items"]:
         try:
-            ranks[i["Country Name"]] = int(i[item_key])
+            ranks[i["Country Name"]] = int(i[item_key])*-1 # Multiply by -1 to reverse sort order
         except:
             ranks[i["Country Name"]] = 0
 
@@ -93,11 +94,11 @@ def get_rank(dynamodb_res, country_name, item_key, r_id):
     # print("")
     # print(sorted_ranks)
     # print("rank: "+ str(list(sorted_ranks_list.keys()).index(country_name)))
-    return int(list(sorted_ranks_list.keys()).index(country_name))
+    return int(list(sorted_ranks_list.keys()).index(country_name))+1
 
 def build_country_report(dynamodb_res, country_name):
     
-    doc = SimpleDocTemplate("Report_A.pdf", pagesize=letter, rightMargin=12, leftMargin=12, topMargin=12, bottomMargin=12)
+    doc = SimpleDocTemplate("Report_A.pdf", pagesize=letter, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50)
 
     # Top table (area, languages, capital)
     area = get_non_econ_item(dynamodb_res, country_name, "Area")
@@ -131,7 +132,6 @@ def build_country_report(dynamodb_res, country_name):
                     
                     # Getting population-density rank during that year
                     population_values.append(int(calc_population_density(dynamodb_res, country_name, value)))
-                    # population_values.append("<rank>")
                     
                     # Appening population_values list to master population list
                     population_info.append(population_values)
@@ -167,9 +167,10 @@ def build_country_report(dynamodb_res, country_name):
     data = econ_info
     econ_table = Table(data, colWidths=[167 for i in range(1,6)], rowHeights=[25 for i in range(1,len(econ_info)+1)])
     econ_table.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1, colors.black),
-                                       ("GRID", (0, 0), (-1, -1), 1, colors.black),
-                                       ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
+                                    ("GRID", (0, 0), (-1, -1), 1, colors.black),
+                                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
 
+    # Styles for flowables
     styles = getSampleStyleSheet()
     centered_header = ParagraphStyle('official_name',
                                       parent=styles['Heading3'],
@@ -181,44 +182,64 @@ def build_country_report(dynamodb_res, country_name):
         Spacer(1*cm, 1*cm),
         general_table,
         Spacer(1*cm, 1*cm),
-        Paragraph('Population'),
+        Paragraph('Population', styles['Heading2']),
         Paragraph('Table of Population, Population Density, and their respective world ranking for that year ordered by year:'),
+        Spacer(0.3*cm, 0.3*cm),
         population_table,
         Spacer(1*cm, 1*cm),
-        Paragraph('Economics\nCurrency: ' + str(get_econ_item(dynamodb_res, country_name, "Currency"))),
+        Paragraph('Economics', styles['Heading2']),
+        Paragraph('Currency: ' + str(get_econ_item(dynamodb_res, country_name, "Currency")), styles['Heading3']),
         Paragraph('\nTable of GDP per capita (GDPPC) from earliet year to latest year, and rank within the world for that year'),
+        Spacer(0.3*cm, 0.3*cm),
         econ_table
     ]
     doc.build(flowables)
 
 def build_global_report(dynamodb_res, year):
-
-    table = dynamodb_res.Table("spreisig_economic")
-    print(table.item_count)
     
-    doc = SimpleDocTemplate("Report_B.pdf", pagesize=letter, rightMargin=12, leftMargin=12, topMargin=12, bottomMargin=12)
+    doc = SimpleDocTemplate("Report_B.pdf", pagesize=letter, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50)
 
+    # Gathering info for population_table
+    population_info = []
+    with open(global_vars.json_dir+"shortlist_non_economic.json", 'r') as json_file:
+        data_dict = json.load(json_file)
+
+        for key in data_dict:
+            for value in data_dict[key]:
+                population_values = []
+                if(value == year):
+                    population_values.append(key) # key = Country Name
+                    population = str(data_dict[key][value]) # Population for that year
+                    population_values.append(population)
+
+                    # Getting population rank during that year
+                    population_values.append(str(get_rank(dynamodb_res, key, value, 2)))
+                    
+                    # Appening population_values list to master population list
+                    population_info.append(population_values)
+    
     # Population table
-    data = [["Country Name", "Population", "Rank"],
-            []]
-    population_table = Table(data, colWidths=[167 for i in range(1,6)], rowHeights=[40 for i in range(1,3)])
+    population_info = sorted(population_info, key=lambda row: int(row[2]))
+    header_row = np.array(["Country Name", "Population", "Rank"])
+    data = np.array(np.vstack([header_row, np.array(population_info)])).tolist()
+    population_table = Table(data, colWidths=[167 for i in range(1,len(data[0])+1)], rowHeights=[25 for i in range(1,len(data)+1)])
     population_table.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1, colors.black),
-                                       ("GRID", (0, 0), (-1, -1), 1, colors.black),
-                                       ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
-    # Area table
-    data = [["Country Name", "Area (sq km)", "Rank"],
-            []]
-    area_table = Table(data, colWidths=[167 for i in range(1,6)], rowHeights=[40 for i in range(1,3)])
-    area_table.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1, colors.black),
-                                       ("GRID", (0, 0), (-1, -1), 1, colors.black),
-                                       ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
-    # Density table
-    data = [["Country Name", "Density (people / sq km)", "Rank"],
-            []]
-    den_table = Table(data, colWidths=[167 for i in range(1,6)], rowHeights=[40 for i in range(1,3)])
-    den_table.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1, colors.black),
-                                       ("GRID", (0, 0), (-1, -1), 1, colors.black),
-                                       ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
+                                          ("GRID", (0, 0), (-1, -1), 1, colors.black),
+                                          ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
+    # # Area table
+    # data = [["Country Name", "Area (sq km)", "Rank"],
+    #         []]
+    # area_table = Table(data, colWidths=[167 for i in range(1,6)], rowHeights=[40 for i in range(1,3)])
+    # area_table.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1, colors.black),
+    #                                 ("GRID", (0, 0), (-1, -1), 1, colors.black),
+    #                                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
+    # # Density table
+    # data = [["Country Name", "Density (people / sq km)", "Rank"],
+    #         []]
+    # den_table = Table(data, colWidths=[167 for i in range(1,6)], rowHeights=[40 for i in range(1,3)])
+    # den_table.setStyle(TableStyle([("BOX", (0, 0), (-1, -1), 1, colors.black),
+    #                                ("GRID", (0, 0), (-1, -1), 1, colors.black),
+    #                                ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
 
     styles = getSampleStyleSheet()
 
@@ -226,13 +247,13 @@ def build_global_report(dynamodb_res, year):
         Paragraph('Global Report', styles['Title']),
         Paragraph('Year: ' + year),
         Spacer(1*cm, 1*cm),
-        Paragraph('Table of Countries ranked by population (largest to smallest)'),
+        Paragraph('Table of Countries Ranked by Population (largest to smallest)'),
         population_table,
-        Spacer(1*cm, 1*cm),
-        Paragraph('Table of countries ranked by area (largest to smallest)'),
-        area_table,
-        Spacer(1*cm, 1*cm),
-        Paragraph('Table of countries ranked by density (largest to smallest)'),
-        den_table
+        # Spacer(1*cm, 1*cm),
+        # Paragraph('Table of Countries Ranked by Area (largest to smallest)'),
+        # area_table,
+        # Spacer(1*cm, 1*cm),
+        # Paragraph('Table of Countries Ranked by Density (largest to smallest)'),
+        # den_table
     ]
-    doc.build(flowables, onFirstPage=onFirstPage)
+    doc.build(flowables)
