@@ -19,21 +19,33 @@ rank_id = {
     2: "spreisig_non_economic"
 }
 
-def calc_population_density(dynamodb_res):
+def calc_population_density(dynamodb_res, country_name, year):
     table = dynamodb_res.Table(rank_id[2])
+    pop_response = table.scan(
+        AttributesToGet=["Country Name", year]
+    )
+    table = dynamodb_res.Table(rank_id[1])
+    area_response = table.scan(
+        AttributesToGet=["Area"]
+    )
 
-    with open(global_vars.json_dir+"shortlist_curpop.json", 'r') as json_file:
-        data_dict = json.load(json_file)
+    ranks = {}
+    for i in pop_response["Items"]:
+        try:
+            ranks[i["Country Name"]] = round((i[year]/area_response[j]["Area"]), 2)
+            j += 1
+        except:
+            ranks[i["Country Name"]] = 0
 
-        response_list = []
-        for key in data_dict:
-            for value in data_dict[key]:
-                if(value.isnumeric()):
-                    response = table.scan(
-                        AttributesToGet=[value]
-                    )
-                    response_list.append(response)
-        print(response_list)
+    # Sorting ranks dictionary by value
+    sorted_ranks = {}
+    sorted_ranks = sorted(ranks.items(), key=lambda x:x[1])
+    sorted_ranks_list = OrderedDict(sorted_ranks)
+    # # print(ranks)
+    # # print("")
+    # # print(sorted_ranks)
+    # print("rank: "+ str(list(sorted_ranks_list.keys()).index(country_name)))
+    return int(list(sorted_ranks_list.keys()).index(country_name))
 
 def get_non_econ_item(dynamodb_res, country_name, item_key):
     table = dynamodb_res.Table("spreisig_non_economic")
@@ -118,8 +130,8 @@ def build_country_report(dynamodb_res, country_name):
                     population_values.append(str(density))
                     
                     # Getting population-density rank during that year
-                    # calc_population_density(dynamodb_res)
-                    population_values.append("<rank>")
+                    population_values.append(int(calc_population_density(dynamodb_res, country_name, value)))
+                    # population_values.append("<rank>")
                     
                     # Appening population_values list to master population list
                     population_info.append(population_values)
@@ -159,10 +171,13 @@ def build_country_report(dynamodb_res, country_name):
                                        ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
 
     styles = getSampleStyleSheet()
+    centered_header = ParagraphStyle('official_name',
+                                      parent=styles['Heading3'],
+                                      alignment=TA_CENTER)
 
     flowables = [
         Paragraph(country_name, styles['Title']),
-        Paragraph('[Official Name: ' + str(get_non_econ_item(dynamodb_res, country_name, "Official Name")) + ']'),
+        Paragraph('[Official Name: ' + str(get_non_econ_item(dynamodb_res, country_name, "Official Name")) + ']', centered_header),
         Spacer(1*cm, 1*cm),
         general_table,
         Spacer(1*cm, 1*cm),
