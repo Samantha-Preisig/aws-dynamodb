@@ -5,7 +5,13 @@ import pandas as pd
 # Import custom files/modules
 import global_vars
 
-# Initial load of data from csv-json files
+# Purpose: bulk_load is called in main.py once an AWS session is established.
+# It populates the given table_name with the information provided by json_filename
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
+#   - table_name: the name of the table being populated
+#   - json_filename: the json file containing the information to be loaded, either
+# shortlist_economic.json or shortlist_non_economic.json
 def bulk_load(dynamodb_res, table_name, json_filename):
     table = dynamodb_res.Table(table_name)
 
@@ -17,13 +23,14 @@ def bulk_load(dynamodb_res, table_name, json_filename):
                 Item=data[key]
             )
 
-def load(dynamodb_res, table_name, record_dict):
-    table = dynamodb_res.Table(table_name)
-    table.put_item(
-        Item=record_dict
-    )
-
+# Purpose: reads data/missing_info.txt line by line, parsing each line to gather
+# the specific details (location and value) to add to the csv file. Please refer
+# to the root README.md for details on missing_info.txt structure and usability
+# Assumption: due to the scale of this assignment, missing_info.txt will never
+# be a large file (to the point of causing increased time complexity), therefore each
+# line of the file is stored for further parsing
 def add_data():
+    # Store all lines of missing_info.txt
     with open(global_vars.missing_info_file, "r") as f:
         lines = f.readlines()
 
@@ -41,31 +48,33 @@ def add_data():
         if(i == 0):
             country = data.split()[0]
             i += 1
-        # else:
-        #     i -= 1 # Removing addition 1 when parsing multi-word country name
-        # # print(country, i+1)
 
-        missing_info = []
-        missing_info.append(data.split()[i])
-        missing_info.append(data.split()[i+1])
-        # for j in range(i+1, len(data.split()), 2):
-        #     missing_info[data.split()[j]] = data.split()[j+1]
-        # print(missing_info)
-
-        # for key in missing_info:
-            # print(pd.isna(df[key]))
-            # print("HEY = "+ key)
-            # if(pd.isnull())
-            # # if(pd.isna(df[key])):
-            # #     df[key] = missing_info[key]
+        # key = column, value = data to be added
+        key = data.split()[i]
+        value = data.split()[i+1]
 
         mod_df = df
+        # Since a country can have more than one language, the cell might already contain a language
+        # and therefore won't be null. If the cell is not empty, the new language needs to be
+        # added to the cell containing the list of existing languages - NOT WORKING ATM
+        # if(key == "Languages"):
+        #     for i, row in df.iterrows():
+        #         c = str(row["Country Name"])
+        #         print(row["Country Name"] == country)
+        #         if(str(row["Country Name"]) == country):
+        #             languages = df[key] + value
+        #             df[key] = languages
+        # else:
         for i, row in df.iterrows():
-            if pd.isnull(row[missing_info[0]]):
-                mod_df = df.fillna(missing_info[1])
-                # print(i, row)
-                # df.loc[i, missing_info[0]] = int(missing_info[1])
+            if pd.isnull(row[key]):
+                mod_df = df.fillna(value)
         mod_df.to_csv(filename, index=False)
+
+def load(dynamodb_res, table_name, record_dict):
+    table = dynamodb_res.Table(table_name)
+    table.put_item(
+        Item=record_dict
+    )
 
 def add_record(dynamodb_res):
     with open(global_vars.add_records_file, "r") as f:

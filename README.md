@@ -58,3 +58,10 @@ A2/
 - explain project structure
 - add_records.txt needs to contain case sensitive keys (to match the column headers)
 - dump command only displays information for a table if it's populated
+
+## Limitations
+- cannot add new languages to existing rows (via missing_info.txt), so missing info such as:
+```
+shortlist_languages.csv: Comoros, Languages French
+shortlist_languages.csv: 'Cook Islands', Languages English
+``` will not work

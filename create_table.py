@@ -158,29 +158,27 @@ def get_country_name(iso3):
 
 # The first filename in filenames list is the filename that contains the merge
 def merge_information(filenames):
-    data_dict = {}
+    dict_list = []
     if(filenames[0] == global_vars.json_dir+"shortlist_economic.json"):
-        with open(filenames[1], 'r') as json_curpop, open(filenames[2], 'r') as json_gdppc:
-            curpop_dict = json.load(json_curpop)
-            gdppc_dict = json.load(json_gdppc)
+        for f in filenames[1:]:
+            with open(f, "r") as json_file:
+                json_dict = json.load(json_file)
+                data_dict = {}
 
-            for key1, value1 in curpop_dict.items():
-                country_dict = {}
-                for item1 in value1:
-                    if(item1 == "Country Name" or item1 == "Currency"):
-                        country_dict[item1] = value1[item1]
-                    
-                    for key2, value2 in gdppc_dict.items():
-                        for item2 in value2:
-                            if(item2.isnumeric()):
-                                country_dict[item2] = value2[item2]
-                data_dict[key1] = country_dict
-            
-        
-        with open(filenames[0], 'w') as out_json:
-            out_json.write(json.dumps(data_dict, indent=4))
+                for key, value in json_dict.items():
+                    country_dict = {}
+                    for item in value:
+                        if(f == global_vars.json_dir+"shortlist_curpop.json" and item == "Country Name"):
+                            country_dict[item] = value[item]
+                        elif(f == global_vars.json_dir+"shortlist_curpop.json" and item == "Currency"):
+                            country_dict[item] = value[item]
+                        elif(f == global_vars.json_dir+"shortlist_gdppc.json" and item.isnumeric() and value[item] != ''):
+                            country_dict[item] = int(value[item])
+                    data_dict[key] = country_dict
+                    dict_list.append(data_dict)
+        for d in dict_list:
+            merge(data_dict, d)
     else:
-        dict_list = []
         for f in filenames[1:]:
             with open(f, 'r') as json_file:
                 json_dict = json.load(json_file)
@@ -203,11 +201,6 @@ def merge_information(filenames):
                             country_dict[item] = value[item]
                         elif(f == global_vars.json_dir+"un_shortlist.json" and item == "Official Name"):
                             country_dict[item] = value[item]
-                    # if(len(key) != 3):
-                    #     new_key = get_iso3(key)
-                    #     data_dict[new_key] = country_dict
-                    # else:
-                    #     data_dict[key] = country_dict
                     if(len(key) == 3):
                         new_key = get_country_name(key)
                         data_dict[new_key] = country_dict
@@ -218,8 +211,8 @@ def merge_information(filenames):
         for d in dict_list:
             merge(data_dict, d)
             
-        with open(filenames[0], 'w') as out_json:
-            out_json.write(json.dumps(data_dict, indent=4))
+    with open(filenames[0], 'w') as out_json:
+        out_json.write(json.dumps(data_dict, indent=4))
 
 def get_iso3(country_key):
     with open(global_vars.json_dir+"shortlist_capitals.json", 'r') as json_file:
