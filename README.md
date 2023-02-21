@@ -52,6 +52,15 @@ A2/
 - shortlist_curpop.csv had only one column labelled `Population 1970`, with the following columns only labelled the year (`1971`, `1972`, etc). Therefore, `Population 1970` was renamed to `1970` to achieve uniform table configuration
 
 ## Assumptions/changes/notes for TA
+### Economic data consists of:
+    - GDPPC (shortlist_gdppc.json)
+    - Currency (shortlist_curpop.json) -> needs to be split into econ and non-econ json files
+### Non-Economic data consists of:
+    - Area (shortlist_area.json)
+    - Capital (shortlist_capitals.json)
+    - Population (shortlist_curpop.json)
+    - Languages (shortlist_languages.json)
+    - ISO2/Official Name (un_shortlist.json)
 - headers that were originally 'Country' were changed to 'Country Name' for convinience
 - shortlist_curpop had a column called "Population 1970" which I changed to "1970" to match the following column pattern
 - automatic bulk load is done when creating all tables from csv files

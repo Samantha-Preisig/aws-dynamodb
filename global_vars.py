@@ -1,4 +1,5 @@
-# Initializing globals to be shared across modules
+
+# Purpose: initializes global variables to be shared across modules
 def init():
     global dict_tables
     global data_dir

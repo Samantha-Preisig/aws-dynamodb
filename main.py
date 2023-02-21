@@ -9,7 +9,7 @@ from botocore.exceptions import ClientError
 
 # Import custom files/modules
 import global_vars
-from create_table import build_json, create_tables
+from create_table import build_json, create_table
 from cli_commands import *
 
 # Purpose: initializing global variables declared in global_vars.py. These
@@ -82,8 +82,8 @@ def build_tables(dynamodb_res, dynamodb_client):
         table_name = ("spreisig_"+filename).replace('.csv', '')
         build_json(table_name, global_vars.data_dir+filename)
     # Creating economic and non-economic tables
-    create_tables(dynamodb_res, dynamodb_client, "spreisig_economic")
-    create_tables(dynamodb_res, dynamodb_client, "spreisig_non_economic")
+    create_table(dynamodb_res, dynamodb_client, "spreisig_economic")
+    create_table(dynamodb_res, dynamodb_client, "spreisig_non_economic")
 
 # Purpose: DRIVER
 # Initializes global variables, establishes AWS session, builds economic and non-economic
