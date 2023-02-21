@@ -247,7 +247,7 @@ def create_table(dynamodb_res, dynamodb_client, table_name):
     existing_tables = dynamodb_client.list_tables()['TableNames']
     
     if table_name not in existing_tables:
-        print("\nBuildling "+ table_name + " ...")
+        print("\nCreating "+ table_name + " ...")
         files = get_relevant_filenames(table_name)
         merge_info(files)
 
@@ -272,9 +272,10 @@ def create_table(dynamodb_res, dynamodb_client, table_name):
             }
         )
         # Print table information
-        print("Table status:", table.table_status, table.table_name)
+        # print("Table status:", table.table_status, table.table_name)
         table.wait_until_exists() # Wait until the table exists
         bulk_load(dynamodb_res, table_name, files[0])
+        print("Table status: " + table_name + " created")
     else:
         # Create tables is only called again when new data has been added to csv files. Therefore
         # the existing tables are deleted and rebuilt using the newly converted csv to json files

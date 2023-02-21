@@ -66,6 +66,9 @@ def config_and_setup():
 # all csv files have been converted to json files, create_tables() is called
 # to create spreisig_economic and spreisig_non_economic tables containing organized
 # information using the converted json files
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
+#   - dynamodb_client: low-level interface for AWS services requests
 def build_tables(dynamodb_res, dynamodb_client):
     filenames = os.listdir(global_vars.data_dir)
 
@@ -103,6 +106,9 @@ def main():
 
         if(command == "help"):
             cmd_help(args)
+        
+        elif(command == "create_table"):
+            cmd_create_table(dynamodb_res, dynamodb_client, args)
 
         elif(command == "delete_table"):
             cmd_delete_table(dynamodb_client, args)
