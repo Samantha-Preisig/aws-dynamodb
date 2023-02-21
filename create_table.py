@@ -6,6 +6,7 @@ from mergedeep import merge
 
 # Import custome files/modules
 import global_vars
+from delete_table import delete_table
 from load_records import bulk_load
 
 def csv_to_json(csv_file_path, json_file_path, table_name): # TODO: Find reference
@@ -88,44 +89,48 @@ def get_relevant_filenames(table_name):
         return [global_vars.json_dir+"shortlist_non_economic.json", global_vars.json_dir+"shortlist_area.json", global_vars.json_dir+"shortlist_capitals.json", global_vars.json_dir+"shortlist_curpop.json", global_vars.json_dir+"shortlist_languages.json", global_vars.json_dir+"un_shortlist.json"]
     return []
 
-def create_tables(dynamodb_res, dynamodb_client):
-    table_names = ["spreisig_economic", "spreisig_non_economic"]
+def create_tables(dynamodb_res, dynamodb_client, table_name):
+    # table_names = ["spreisig_economic", "spreisig_non_economic"]
     existing_tables = dynamodb_client.list_tables()['TableNames']
     
-    for table_name in table_names:
-        if table_name not in existing_tables:
-            print("\nBuildling "+ table_name + " ...")
-            # files[0] contains the json file with merged content, files[1:] are json files to be merged
-            files = get_relevant_filenames(table_name)
-            merge_information(files)
+    # for table_name in table_names:
+    if table_name not in existing_tables:
+        print("\nBuildling "+ table_name + " ...")
+        # files[0] contains the json file with merged content, files[1:] are json files to be merged
+        files = get_relevant_filenames(table_name)
+        merge_information(files)
 
-            part_key, sort_key = get_table_keys(table_name)
-            table = dynamodb_res.create_table(
-                TableName=table_name,
-                KeySchema=[
-                    {
-                        'AttributeName': part_key,
-                        'KeyType': 'HASH' # Partition key
-                    }
-                ],
-                AttributeDefinitions=[
-                    {
-                        'AttributeName': part_key,
-                        'AttributeType': get_key_type(part_key)
-                    }
-                ],
-                ProvisionedThroughput={
-                    'ReadCapacityUnits': 10,
-                    'WriteCapacityUnits': 10
+        part_key, sort_key = get_table_keys(table_name)
+        table = dynamodb_res.create_table(
+            TableName=table_name,
+            KeySchema=[
+                {
+                    'AttributeName': part_key,
+                    'KeyType': 'HASH' # Partition key
                 }
-            )
-            # Print table information
-            print("Table status:", table.table_status, table.table_name)
-            table.wait_until_exists() # Wait until the table exists
-            bulk_load(dynamodb_res, table_name, files[0])
-            # bulk_load(dynamodb_res, table_name, global_vars.json_dir+"shortlist_non_economic.json")
-        else:
-            print(table_name + " already exists")
+            ],
+            AttributeDefinitions=[
+                {
+                    'AttributeName': part_key,
+                    'AttributeType': get_key_type(part_key)
+                }
+            ],
+            ProvisionedThroughput={
+                'ReadCapacityUnits': 10,
+                'WriteCapacityUnits': 10
+            }
+        )
+        # Print table information
+        print("Table status:", table.table_status, table.table_name)
+        table.wait_until_exists() # Wait until the table exists
+        bulk_load(dynamodb_res, table_name, files[0])
+        # bulk_load(dynamodb_res, table_name, global_vars.json_dir+"shortlist_non_economic.json")
+    else:
+        # Create tables is only called again when new data has been added to csv files. Therefore
+        # the existing tables are deleted and rebuilt using the newly converted csv to json files
+        print("\n" + table_name + " already exists")
+        delete_table(dynamodb_client, table_name)
+        create_tables(dynamodb_res, dynamodb_client, table_name)
 
 def get_country_name(iso3):
     with open(global_vars.json_dir+"shortlist_capitals.json", 'r') as json_file:
@@ -193,7 +198,7 @@ def merge_information(filenames):
                         elif(f == global_vars.json_dir+"shortlist_capitals.json" and item == "Capital"):
                             country_dict[item] = value[item]
                         elif(f == global_vars.json_dir+"shortlist_curpop.json" and item.isnumeric() and value[item] != ''):
-                            country_dict[item] = int(value[item])
+                            country_dict[item] = int(float(value[item]))
                         elif(f == global_vars.json_dir+"shortlist_languages.json" and item == "Languages"):
                             country_dict[item] = value[item]
                         elif(f == global_vars.json_dir+"un_shortlist.json" and item == "Official Name"):

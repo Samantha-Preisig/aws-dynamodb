@@ -1,0 +1,4 @@
+shortlist_curpop.csv: Australia, 2019 25203198
+shortlist_curpop.csv: Bangladesh, 2019 163046161
+shortlist_curpop.csv: Canada, 2019 37411047
+shortlist_curpop.csv: 'Costa Rica', 2019 5047561

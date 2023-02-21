@@ -14,37 +14,19 @@ import numpy as np
 import global_vars
 from create_table import get_iso3
 
+# Used in get_rank() to identify which table item_key belongs to
 rank_id = {
     1: "spreisig_economic",
     2: "spreisig_non_economic"
 }
 
-def calc_population_density(dynamodb_res, country_name, year):
-    table = dynamodb_res.Table(rank_id[2])
-    pop_response = table.scan(
-        AttributesToGet=["Country Name", year]
-    )
-    table = dynamodb_res.Table(rank_id[2])
-    area_response = table.scan(
-        AttributesToGet=["Area"]
-    )
-
-    ranks = {}
-    for i in range(0, len(pop_response['Items'])):
-        pop_item = pop_response['Items'][i]
-        area_item = area_response['Items'][i]
-        ranks[pop_item["Country Name"]] = round((int(pop_item[year])/area_item["Area"]), 2)*-1
-
-    # Sorting ranks dictionary by value
-    sorted_ranks = {}
-    sorted_ranks = sorted(ranks.items(), key=lambda x:x[1])
-    sorted_ranks_list = OrderedDict(sorted_ranks)
-    # # print(ranks)
-    # # print("")
-    # print(sorted_ranks)
-    # print("rank: "+ str(list(sorted_ranks_list.keys()).index(country_name)))
-    return int(list(sorted_ranks_list.keys()).index(country_name))+1
-
+# Purpose: queries the non-economic table ("spreisig_non_economic") to retrieve
+# the value from item_key for the given country_name
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
+#   - country_name: the country holding requested data
+#   - item_key: the key to the value requested (such as "Area", "Languages", "Capital")
+# Returns: the value for item_key, "-" otherwise
 def get_non_econ_item(dynamodb_res, country_name, item_key):
     table = dynamodb_res.Table("spreisig_non_economic")
 
@@ -57,6 +39,13 @@ def get_non_econ_item(dynamodb_res, country_name, item_key):
         except:
             return "-"
 
+# Purpose: queries the economic table ("spreisig_economic") to retrieve
+# the value from item_key for the given country_name
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
+#   - country_name: the country holding requested data
+#   - item_key: the key to the value requested (such as "Currency" or years for GDPPC values)
+# Returns: the value for item_key, "-" otherwise
 def get_econ_item(dynamodb_res, country_name, item_key):
     table = dynamodb_res.Table("spreisig_economic")
 
@@ -69,7 +58,43 @@ def get_econ_item(dynamodb_res, country_name, item_key):
         except:
             return "-"
 
+# Purpose: calculates population density for all countries with the given year and
+# returns the population-density rank of the given country_name
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
+#   - country_name: the country to return population-density rank
+#   - year: population densities are calculated for the given year
+# Returns: int representing the country_name's population-density rank
+def calc_population_density_rank(dynamodb_res, country_name, year):
+    # Scanning non-economic table for population and area data for the given country_name
+    table = dynamodb_res.Table(rank_id[2])
+    response = table.scan(
+        AttributesToGet=["Country Name", year, "Area"]
+    )
+
+    densities = {}
+    for i in range(0, len(response["Items"])):
+        item = response["Items"][i]
+        densities[item["Country Name"]] = round((int(item[year])/item["Area"]), 2)*-1
+
+    # Sorting densities dictionary by value (value = density)
+    sorted_densities = {}
+    sorted_densities = sorted(densities.items(), key=lambda x:x[1])
+    sorted_densities_list = OrderedDict(sorted_densities)
+
+    # Returning the index of the given country_name within the sorted density list (sorted_densities_list)
+    return int(list(sorted_densities_list.keys()).index(country_name))+1 # Adding 1 as index counts from 0
+
+# Purpose: scans a table (identified by r_id) and returns the item_key rank
+# for the given country_name
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
+#   - country_name: the country the returned rank value belongs to
+#   - item_key: the key to the value requested (such as "Area", or years for GDPPC/population values)
+#   - r_id: identifies which table to scan using this module's global dictionary "rank_id"
+# Returns: int representing the country_name's item_key rank
 def get_rank(dynamodb_res, country_name, item_key, r_id):
+    # Scanning economic (r_id=1) or non-economic (r_id=2) table for item_key
     table = dynamodb_res.Table(rank_id[r_id])
 
     response = table.scan(
@@ -83,16 +108,19 @@ def get_rank(dynamodb_res, country_name, item_key, r_id):
         except:
             ranks[i["Country Name"]] = 0
 
-    # Sorting ranks dictionary by value
+    # Sorting ranks dictionary by value (value = density)
     sorted_ranks = {}
     sorted_ranks = sorted(ranks.items(), key=lambda x:x[1])
     sorted_ranks_list = OrderedDict(sorted_ranks)
-    # print(ranks)
-    # print("")
-    # print(sorted_ranks)
-    # print("rank: "+ str(list(sorted_ranks_list.keys()).index(country_name)))
-    return int(list(sorted_ranks_list.keys()).index(country_name))+1
 
+    # Returning the index of the given country_name within the sorted density list (sorted_ranks_list)
+    return int(list(sorted_ranks_list.keys()).index(country_name))+1 # Adding 1 as index counts from 0
+
+# Purpose: builds Report_A.pdf containing tables of information about a specified
+# country using ReportLab
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
+#   - country_name: the country the report is based on
 def build_country_report(dynamodb_res, country_name):
     
     doc = SimpleDocTemplate("Report_A.pdf", pagesize=letter, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50)
@@ -128,7 +156,7 @@ def build_country_report(dynamodb_res, country_name):
                     population_values.append(str(density))
                     
                     # Getting population-density rank during that year
-                    population_values.append(int(calc_population_density(dynamodb_res, country_name, value)))
+                    population_values.append(int(calc_population_density_rank(dynamodb_res, country_name, value)))
                     
                     # Appening population_values list to master population list
                     population_info.append(population_values)
@@ -192,6 +220,11 @@ def build_country_report(dynamodb_res, country_name):
     ]
     doc.build(flowables)
 
+# Purpose: builds Report_B.pdf containing tables of information about a specified
+# year using ReportLab
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
+#   - year: the year the report is based on
 def build_global_report(dynamodb_res, year):
     
     doc = SimpleDocTemplate("Report_B.pdf", pagesize=letter, rightMargin=50, leftMargin=50, topMargin=50, bottomMargin=50)
@@ -210,6 +243,7 @@ def build_global_report(dynamodb_res, year):
                 area_values = []
                 density_values = []
                 
+                # Gathering population information
                 if(value == year):
                     population_values.append(key) # key = Country Name
                     population = (data_dict[key][value]) # Population for that year
@@ -221,6 +255,7 @@ def build_global_report(dynamodb_res, year):
                     # Appening population_values list to master population list
                     population_info.append(population_values)
                 
+                # Gathering area information
                 if(value == "Area"):
                     area_values.append(key) # key = Country Name
                     area = (data_dict[key][value])
@@ -232,12 +267,11 @@ def build_global_report(dynamodb_res, year):
                     # Appening population_values list to master population list
                     area_info.append(area_values)
                 
+                # Gathering population density information
                 if population_values:
                     pop_area.append(population_values[1])
-                    # print("POP SAVED, key = "+key)
                 if area_values:
                     pop_area.append(area_values[1])
-                    # print("AREA SAVED, key = "+key)
                 
                 if(len(pop_area) == 2):
                     density_values.append(key) # key = Country Name
@@ -247,14 +281,14 @@ def build_global_report(dynamodb_res, year):
                     density_values.append(str(density))
                     
                     # Getting population-density rank during that year
-                    density_values.append(int(calc_population_density(dynamodb_res, key, year)))
+                    density_values.append(int(calc_population_density_rank(dynamodb_res, key, year)))
 
                     # Appening density_values list to master density list
                     density_info.append(density_values)
                     pop_area = [] # Clearing pop_area for next country
     
     # Population table
-    population_info = sorted(population_info, key=lambda row: int(row[2]))
+    population_info = sorted(population_info, key=lambda row: int(row[2])) # Sorting population_info by rank
     header_row = np.array(["Country Name", "Population", "Rank"])
     data = np.array(np.vstack([header_row, np.array(population_info)])).tolist()
 
@@ -264,7 +298,7 @@ def build_global_report(dynamodb_res, year):
                                           ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
     
     # Area table
-    area_info = sorted(area_info, key=lambda row: int(row[2]))
+    area_info = sorted(area_info, key=lambda row: int(row[2])) # Sorting area_info by rank
     header_row = np.array(["Country Name", "Area (sq km)", "Rank"])
     data = np.array(np.vstack([header_row, np.array(area_info)])).tolist()
 
@@ -274,7 +308,7 @@ def build_global_report(dynamodb_res, year):
                                     ("VALIGN", (0, 0), (-1, -1), "MIDDLE")]))
     
     # Density table
-    density_info = sorted(density_info, key=lambda row: int(row[2]))
+    density_info = sorted(density_info, key=lambda row: int(row[2])) # Sorting density_info by rank
     header_row = np.array(["Country Name", "Density (people / sq km)", "Rank"])
     data = np.array(np.vstack([header_row, np.array(density_info)])).tolist()
     

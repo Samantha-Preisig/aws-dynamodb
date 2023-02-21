@@ -12,8 +12,12 @@ import global_vars
 from create_table import build_json, create_tables
 from cli_commands import *
 
+# Purpose: initializing global variables declared in global_vars.py. These
+# variables are made global to all modules in the current directory
 def set_globals():
-    global_vars.init()
+    global_vars.init() # Declaring global variables
+
+    # Initialization
     global_vars.dict_tables = {
         "shortlist_area.csv": {"table_name": "spreisig_shortlist_area", "key_columns": ["ISO3"], "columns": []},
         "shortlist_capitals.csv": {"table_name": "spreisig_shortlist_capitals", "key_columns": ["ISO3"], "columns": []},
@@ -29,7 +33,10 @@ def set_globals():
     global_vars.help_dir = "help/"
     global_vars.add_records_file = global_vars.data_dir+"add_records.txt"
     global_vars.delete_records_file = global_vars.data_dir+"delete_records.txt"
+    global_vars.missing_info_file = global_vars.data_dir+"missing_info.txt"
 
+# Purpose: establishes an AWS session by parsing config file (S5-S3.conf) and setting
+# up client and resources
 def config_and_setup():
     # AWS access key id and secret access key information found in configuration file (S5-S3.conf)
     config = configparser.ConfigParser()
@@ -54,19 +61,33 @@ def config_and_setup():
         else:
             print("Unexpected error: %s" % e)
 
+# Purpose: iterates through data/ directory and converts each csv files to
+# json, placing each converted json file into data/json/ directory. After
+# all csv files have been converted to json files, create_tables() is called
+# to create spreisig_economic and spreisig_non_economic tables containing organized
+# information using the converted json files
 def build_tables(dynamodb_res, dynamodb_client):
     filenames = os.listdir(global_vars.data_dir)
 
+    # Removing filenames within the data directory that are not csv files
     filenames.remove(global_vars.add_records_file.replace(global_vars.data_dir, ''))
     filenames.remove(global_vars.delete_records_file.replace(global_vars.data_dir, ''))
+    filenames.remove(global_vars.missing_info_file.replace(global_vars.data_dir, ''))
     filenames.remove("json")
     filenames.remove("README.md")
 
+    # Looping through each csv file within the data directory and calling build_json to
+    # convert the csv file into a json file
     for filename in filenames:
         table_name = ("spreisig_"+filename).replace('.csv', '')
         build_json(table_name, global_vars.data_dir+filename)
-    create_tables(dynamodb_res, dynamodb_client)
+    # Creating economic and non-economic tables
+    create_tables(dynamodb_res, dynamodb_client, "spreisig_economic")
+    create_tables(dynamodb_res, dynamodb_client, "spreisig_non_economic")
 
+# Purpose: DRIVER
+# Initializes global variables, establishes AWS session, builds economic and non-economic
+# tables, and launches CLI for table manipulation and report production
 def main():
     # Setting global variables, AWS configuration, and initial bulk creation of tables
     set_globals()
@@ -83,11 +104,12 @@ def main():
         if(command == "help"):
             cmd_help(args)
 
-        elif(command == "create_new_table"):
-            cmd_create_table(dynamodb_res, dynamodb_client, args)
-
         elif(command == "delete_table"):
             cmd_delete_table(dynamodb_client, args)
+
+        elif(command == "add_data"):
+            cmd_add_data()
+            build_tables(dynamodb_res, dynamodb_client) # Rebuilding tables with updated csv files
 
         elif(command == "add_record"):
             cmd_add_record(dynamodb_res)
