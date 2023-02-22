@@ -47,10 +47,21 @@ A2/
     - `delete_records.txt` is a file which can be edited by the user. This file contains a list of records to remove from a specified table
     - `missing_info.txt` is a file which can be edited by the user. This file contains a list of missing information to add to specified csv files
 - `help/` holds text files with information about each cli command
-- `main.py` sets up global vars (shared across modules) and configuration for AWS session
-- `cli_commands.py` is a module holding all cli functionality
+- `main.py` sets up global vars (shared across modules) and configuration for AWS session then runs CLI
+- `cli_commands.py, global_vars.py, create_table.py, delete_table.py, load_records.py, delete_records.py, dump.py, build_reports.py` are modules
 
-# CLI functionality and commands
+# Running CLI
+- Make sure to have your aws_access_key_id and aws_secret_access_key set up in an `S5-S3.conf` file. The file should be at root of project and set up as the following:
+```
+[default]
+region = ca-central-1
+aws_access_key_id = <your aws_access_key_id>
+aws_secret_access_key = <your aws_secret_access_key>
+```
+- Ensure you have the requirements for this project by using the following command: `pip install -r Requirements.txt`
+- To run program: `python3 main.py`
+- To exit CLI, enter `quit`
+
 ## Adding missing information to csv files using `data/missing_info.txt`
 `missing_info.txt` contains a list of missing information (for specific cells) for a given csv file
 - The user must edit this file prior to using the cli command `add_data`
@@ -65,10 +76,8 @@ A2/
 `add_records.txt` contains a list of records to be added to a specified table
 - The user must edit this file prior to using the cli command `add_records`
 - The file will be read line by line, assuming each line contains **one** record with a specific configuration
-- Each record listed in `add_records.txt` must be of the following order/configuration: `csv_filename: [Partition key] value, [Sort key *if it exists for the current csv_filename table] value, [Column name] value, [Column name] value, etc`
-    - For example, the following will add a record to spreisig_un_shortlist table: `un_shortlist.csv: ISO3 AUS1, Official Name Australia, Country Name Australia, ISO2 AU1`
-### Assumptions and limitations to adding records:
-- All keys and their values must be listed (in the order of the table's columns)
+- Each record listed in `add_records.txt` must be of the following order/configuration: `table_name: [Partition key] value, [Sort key *if it exists*] value, [Column name] value, [Column name] value, etc`
+    - For example, the following will add a record to spreisig_economic: `spreisig_economic: Country Name Australia1, 1970 12345, Currency AUD`. This record adds data to 'Country Name', '1970', and 'Currency' columns, with all other columns empty in this record
 ### TODO
 - Check what happens if add_records.txt is empty
 - Error handling for items in each line that DNE
@@ -77,10 +86,8 @@ A2/
 `delete_records.txt` contains a list of records to be removed from a specified table.
 - The user must edit this file prior to using the cli command `delete_records`
 - The file will be read line by line, assuming each line contains **one** record with a specific configuration
-- Each record listed in `delete_records.txt` must be of the following order/configuration: `csv_filename: [Partition key] value, [Sort key *if it exists for the current csv_filename table] value`. *Similar to add_records.txt, however, only the table keys (and their corresponding values) are listed*
-    - For example, the following will delete a record from spreisig_un_shortlist table: `un_shortlist.csv: ISO3 AUS1, Official Name Australia`
-### Assumptions and limitations to removing records:
-- Removes records based only on the partition and sort keys with their corresponding values
+- Each record listed in `delete_records.txt` must be of the following order/configuration: `table_name: [Partition key] value, [Sort key *if it exists*] value`. *Similar to add_records.txt, however, only the table keys (and their corresponding values) are listed*
+    - For example, the following will delete a record from spreisig_economic: `spreisig_economic: Country Name Australia`
 ### TODO
 - Check what happens if delete_records.txt is empty
 - Error handling for items in each line that DNE
@@ -112,3 +119,4 @@ shortlist_languages.csv: 'Cook Islands', Languages English
 ### Adding new records to table
 - Each line in `add_records.txt` MUST follow a specified structure (outlined above)
 - [TODO - easy handle] Case sensitive: column headers (such as 'Country Name' and 'Area') need to be capitalized in order to detect table headers
+- `[Check]` All keys and their values must be listed (in the order of the table's columns)
