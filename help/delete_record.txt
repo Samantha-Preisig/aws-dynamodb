@@ -1,4 +1,0 @@
-
-Usage: delete_record
-
-Reads delete_records.txt (in data/delete_records.txt) and deletes records line by line

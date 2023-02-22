@@ -1,5 +1,7 @@
+# Authour: Samantha Preisig
+# File: global_vars.py (module)
+# Brief: Initializes global variables to be shared across modules
 
-# Purpose: initializes global variables to be shared across modules
 def init():
     global dict_tables
     global data_dir

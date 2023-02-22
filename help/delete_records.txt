@@ -1,0 +1,6 @@
+
+Usage: delete_records
+
+Reads `delete_records.txt` (in `data/delete_records.txt`) and deletes records line by line
+Ensure record information is added to `data/delete_records.txt` before using this command
+For details on the structure of how to list records in `data/delete_records.txt`, refer to README.md

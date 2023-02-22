@@ -1,3 +1,8 @@
+# Authour: Samantha Preisig
+# File: build_reports.py (module)
+# Brief: builds Report_A.pdf and Report_B.pdf organizing/displaying a specific country's information and global
+# information for a specific year (respectively)
+
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle

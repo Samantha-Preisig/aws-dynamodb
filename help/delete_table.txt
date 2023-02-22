@@ -1,2 +1,7 @@
 
 Usage: delete_table [table_name]
+
+Deletes the given table_name
+
+Command arguments:
+table_name          name of table to be deleted

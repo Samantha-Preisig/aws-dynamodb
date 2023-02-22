@@ -18,12 +18,27 @@ The list of csv files include:
 ```
 A2/
 |-- data/
+|   |-- add_records.txt
+|   |-- delete_records.txt
+|   |-- missing_info.txt
+|   |-- README.md
+|   |-- XXX.csv
 |   |-- json/
 |
 |-- help/
+|   |-- default.txt
+|   |-- XXX.txt
+|
 |-- main.py
 |-- cli_commands.py
 |-- global_vars.py
+|-- create_table.py
+|-- delete_table.py
+|-- load_records.py
+|-- delete_records.py
+|-- dump.py
+|-- build_reports.py
+|-- Requirements.txt
 |-- README.md
 ```
 - `data/` holds `json/` directory, all csv files, `add_records.txt`, `delete_records.txt`, and `missing_info.txt`

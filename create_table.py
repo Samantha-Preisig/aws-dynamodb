@@ -1,3 +1,7 @@
+# Authour: Samantha Preisig
+# File: create_table.py (module)
+# Brief: creates and populates DynamoDB tables
+
 import boto3
 import csv
 import json
@@ -237,6 +241,10 @@ def merge_info(filenames):
             
     with open(filenames[0], "w") as out_json:
         out_json.write(json.dumps(data_dict, indent=4))
+    if("non_economic" in filenames[0]):
+        populate_global_columns(filenames[0], "spreisig_non_economic")
+    else:
+        populate_global_columns(filenames[0], "spreisig_economic")
 
 # Purpose: builds and populates a dynamoDB table
 # Params:

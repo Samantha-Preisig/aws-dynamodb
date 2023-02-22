@@ -1,0 +1,6 @@
+
+Usage: add_records
+
+Reads `add_records.txt` (in `data/add_records.txt`) and adds records line by line
+Ensure record information is added to `data/add_records.txt` before using this command
+For details on the structure of how to list records in `data/add_records.txt`, refer to README.md

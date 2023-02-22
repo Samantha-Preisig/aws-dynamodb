@@ -1,11 +1,15 @@
+# Authour: Samantha Preisig
+# File: cli_commands.py (module)
+# Brief: handles command arguments (error handling) and directs commands to their respective subroutines
+
 import os
 import sys
 
 # Import custom files/modules
 from create_table import create_table
 from delete_table import delete_table
-from load_records import add_data, add_record
-from delete_record import delete_record
+from load_records import add_data, add_records
+from delete_records import delete_records
 from dump import dump_table
 from build_reports import build_country_report, build_global_report
 
@@ -24,7 +28,7 @@ def cmd_help(args):
         with open('help/default.txt') as f:
             print(f.read())
 
-# Purpose: builds economic and non-economic dynamoDB tables in the
+# Purpose: builds economic or non-economic dynamoDB tables in the
 # event the user deletes a table in a single CLI-run
 # Params:
 #   - dynamodb_res: high-level abstraction for AWS services requests
@@ -50,16 +54,24 @@ def cmd_delete_table(dynamodb_client, args):
 def cmd_add_data():
     add_data()
 
-# TODO
+# Purpose: calls add_records to add records listed in data/add_records.txt
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
 def cmd_add_record(dynamodb_res):
-    add_record(dynamodb_res)
+    add_records(dynamodb_res)
 
-# TODO
+# Purpose: calls delete_records to delete records listed in data/delete_records.txt
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
 def cmd_delete_record(dynamodb_res):
-    delete_record(dynamodb_res)
+    delete_records(dynamodb_res)
 
-# TODO
-def cmd_dump(dynamodb_res, args): #TODO
+# Purpose: calls dump_table to display contents of a given table (args)
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
+#   - dynamodb_client: low-level interface for AWS services requests
+#   - args: (len=1) contains the name of the table to be displayed
+def cmd_dump(dynamodb_res, dynamodb_client, args):
     if(len(args) != 1):
         print("Invalid arguments. Enter `help dump` for valid arguments")
         return

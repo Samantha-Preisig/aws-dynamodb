@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+# Authour: Samantha Preisig
+# File: main.py (driver)
+# Brief: creates DynamoDB tables and runs CLI
 
 import configparser
 import os
@@ -117,14 +119,14 @@ def main():
             cmd_add_data()
             build_tables(dynamodb_res, dynamodb_client) # Rebuilding tables with updated csv files
 
-        elif(command == "add_record"):
+        elif(command == "add_records"):
             cmd_add_record(dynamodb_res)
 
-        elif(command == "delete_record"):
+        elif(command == "delete_records"):
             cmd_delete_record(dynamodb_res)
 
         elif(command == "dump"):
-            cmd_dump(dynamodb_res, args)
+            cmd_dump(dynamodb_res, dynamodb_client, args)
 
         elif(command == "build_report"):
             cmd_build_report(dynamodb_res, args)

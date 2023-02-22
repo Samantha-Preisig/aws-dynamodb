@@ -1,4 +1,0 @@
-
-Usage: add_record
-
-Reads add_records.txt (in data/add_records.txt) and adds records line by line

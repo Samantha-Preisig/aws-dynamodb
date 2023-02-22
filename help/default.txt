@@ -2,10 +2,11 @@
 These are the current commands you can use:
 
 help                shows a list of commands and their usage
-create_new_table    creates a new (empty) table
+create_table        builds economic or non-economic table
 delete_table        deletes an entire table
-load_record         ???
-add_record          loads a single record to an existing table
-delete_record       deletes an existing record from an existing table
+add_data            reads `missing_info.txt` (in `data/missing_info.txt`) and adds missing information to the specified csv file(s)
+add_records         reads `add_records.txt` (in `data/add_records.txt`) and adds records line by line
+delete_records      reads `delete_records.txt` (in `data/delete_records.txt`) and deletes records line by line
 dump                displays all data for a specified table
-query               ???
+build_report        builds a pdf report of a given country (Report_A.pdf) or global information for a given year (Report_B.pdf)
+quit                exits CLI

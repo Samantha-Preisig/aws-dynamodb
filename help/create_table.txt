@@ -1,0 +1,7 @@
+
+Usage: create_table [table_name]
+
+Builds economic or non-economic table in the event that one or both tables have been deleted
+
+Command arguments:
+table_name          name of table to be re-created (must be `spreisig_economic` or `spreisig_non_economic`)

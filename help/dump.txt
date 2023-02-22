@@ -4,4 +4,4 @@ Usage: dump [table_name]
 Displays all data for a given table
 
 Command arguments:
-table_name          required: name of table being created
+table_name          name of table to be displayed

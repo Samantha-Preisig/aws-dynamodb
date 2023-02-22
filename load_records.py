@@ -1,3 +1,11 @@
+# Authour: Samantha Preisig
+# File: load_records.py (module)
+# Brief: loads information to DynamoDB tables and csv files
+# Information includes:
+#   - Initial set of data from csv files (bulk_load())
+#   - Information to populate single empty cells (add_data())
+#   - New records (add_records())
+
 import boto3
 import json
 import pandas as pd
@@ -91,7 +99,7 @@ def load(dynamodb_res, table_name, record_dict):
 # line of the file is stored for further parsing
 # Params:
 #   - dynamodb_res: high-level abstraction for AWS services requests
-def add_record(dynamodb_res):
+def add_records(dynamodb_res):
     with open(global_vars.add_records_file, "r") as f:
         lines = f.readlines()
 

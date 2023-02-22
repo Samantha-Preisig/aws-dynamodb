@@ -1,6 +1,7 @@
 
 Usage: help [command]
 
-shows a list of commands
+Shows a list of commands
 
-[command]: if specified will show a detailed help page for a specific command
+Command arguments:
+command             if specified will show a detailed help page for a specific command

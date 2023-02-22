@@ -1,3 +1,7 @@
+# Authour: Samantha Preisig
+# File: delete_records.py (module)
+# Brief: deletes records from DynamoDB tables listed in data/delete_records.txt
+
 import boto3
 
 # Import custom files/modules
@@ -27,7 +31,7 @@ def delete(dynamodb_res, table_name, key_dict):
 # line of the file is stored for further parsing
 # Params:
 #   - dynamodb_res: high-level abstraction for AWS services requests
-def delete_record(dynamodb_res):
+def delete_records(dynamodb_res):
     with open(global_vars.delete_records_file, "r") as f:
         lines = f.readlines()
 

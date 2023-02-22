@@ -1,8 +1,8 @@
 
-Usage: build_report [-c country_name | -g year ]
+Usage: build_report [-c country_name | -g year]
 
 Builds a pdf report of a given country (Report_A.pdf) or global information for a given year (Report_B.pdf)
 
 Command arguments:
--c country_name     build country report for the given country_name
--g year             build global report for the given year
+-c country_name     builds country report for the given country_name
+-g year             builds global report for the given year

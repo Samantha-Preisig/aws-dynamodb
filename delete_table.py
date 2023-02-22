@@ -1,3 +1,7 @@
+# Authour: Samantha Preisig
+# File: delete_table.py (module)
+# Brief: deletes a given DynamoDB table
+
 import boto3
 
 # Purpose: deletes given table. Table does not need to be empty
