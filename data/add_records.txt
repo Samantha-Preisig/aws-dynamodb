@@ -1,2 +1,2 @@
-un_shortlist.csv: ISO3 AUS1, Official Name Australia, Country Name Australia, ISO2 AU1
-un_shortlist.csv: ISO3 AUS2, Official Name Australia, Country Name Australia, ISO2 AU2
+spreisig_economic: Country Name Australia1, 1970 12345, Currency AUD
+spreisig_non_economic: ISO3 AU1, 1970 12345, Official Name Australia1

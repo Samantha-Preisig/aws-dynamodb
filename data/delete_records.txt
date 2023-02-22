@@ -1,3 +1,2 @@
-un_shortlist.csv: ISO3 AUS1, Official Name Australia
-un_shortlist.csv: ISO3 AUS2, Official Name Australia
-un_shortlist.csv: ISO3 ARM, Official Name the Republic of Armenia
+spreisig_economic: Country Name Australia1
+spreisig_non_economic: ISO3 AU1

@@ -25,7 +25,7 @@ def bulk_load(dynamodb_res, table_name, json_filename):
 
 # Purpose: reads data/missing_info.txt line by line, parsing each line to gather
 # the specific details (location and value) to add to the csv file. Please refer
-# to the root README.md for details on missing_info.txt structure and usability
+# to README.md for details on missing_info.txt structure and usability
 # Assumption: due to the scale of this assignment, missing_info.txt will never
 # be a large file (to the point of causing increased time complexity), therefore each
 # line of the file is stored for further parsing
@@ -70,24 +70,39 @@ def add_data():
                 mod_df = df.fillna(value)
         mod_df.to_csv(filename, index=False)
 
+# Purpose: loads a dictionary representing a new record/row to
+# the given table_name
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
+#   - table_name: name of table receiving new record
+#   - record_dict: dictionary representation of new record
 def load(dynamodb_res, table_name, record_dict):
     table = dynamodb_res.Table(table_name)
     table.put_item(
         Item=record_dict
     )
 
+# Purpose: reads data/add_records.txt line by line, parsing each line to gather
+# the specific details (table name, partition key, and other data) to add each record
+# into its specified table. Please refer to README.md for details on add_records.txt
+# structure and usability
+# Assumption: due to the scale of this assignment, add_records.txt will never
+# be a large file (to the point of causing increased time complexity), therefore each
+# line of the file is stored for further parsing
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
 def add_record(dynamodb_res):
     with open(global_vars.add_records_file, "r") as f:
         lines = f.readlines()
 
-    table_name = ""
     for line in lines:
-        filename = line.split(':')[0]
-        table_name = "spreisig_"+(filename.replace('.csv', ''))
+        table_name = line.split(':')[0]
         record_data = line.split(':')[1]
         record_data = record_data.split(',')
+        
         record_dict = {}
         for data in record_data:
+            # If key is multiple words
             if(len(data.split()) == 3): # Example, key = Country Name, value = Canada
                 key = data.split()[0] + " " + data.split()[1]
                 value = data.split()[2]

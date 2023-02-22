@@ -4,6 +4,13 @@ import boto3
 import global_vars
 from create_table import get_table_keys
 
+# Purpose: deletes record idenified by the key_dict from given
+# table_name
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
+#   - table_name: name of table containing record to be deleted
+#   - key_dict: dictionary representation of deleted record's (table) keys
+# and values
 def delete(dynamodb_res, table_name, key_dict):
     table = dynamodb_res.Table(table_name)
     table.delete_item(
@@ -11,22 +18,31 @@ def delete(dynamodb_res, table_name, key_dict):
     )
     return True
 
+# Purpose: reads data/delete_records.txt line by line, parsing each line to gather
+# the specific details (table name, table key(s) and their respective values) to
+# identify the record to delete from table
+# Please refer to README.md for details on delete_records.txt structure and usability
+# Assumption: due to the scale of this assignment, delete_records.txt will never
+# be a large file (to the point of causing increased time complexity), therefore each
+# line of the file is stored for further parsing
+# Params:
+#   - dynamodb_res: high-level abstraction for AWS services requests
 def delete_record(dynamodb_res):
     with open(global_vars.delete_records_file, "r") as f:
         lines = f.readlines()
 
-    table_name = ""
     line_counter = 1
     for line in lines:
-        filename = line.split(':')[0]
-        table_name = "spreisig_"+(filename.replace('.csv', ''))
-        table_data = line.split(':')[1]
+        table_name = line.split(":")[0]
+        table_data = line.split(":")[1]
         table_data = table_data.split(',')
         
         table_keys = {}
         data_keys = []
         for data in table_data:
+            data.replace("\n", "")
             value = ""
+            # If key is multiple words
             if(len(data.split()) >= 3): # Example, key = Country Name, value = Canada
                 key = data.split()[0] + " " + data.split()[1] # Largest key contains 2 words with given csv tables
                 for i in range(2, len(data.split())-1):
@@ -37,10 +53,9 @@ def delete_record(dynamodb_res):
             table_keys[key] = value
             data_keys.append(key)
 
-        # print(table_keys)
         del_ret = False
         part, sort = get_table_keys(table_name)
-        if(sort == ""):
+        if(sort == ""): # Table does not have sort key
             if(part == data_keys[0]):
                 del_ret = delete(dynamodb_res, table_name, table_keys)
         else:
